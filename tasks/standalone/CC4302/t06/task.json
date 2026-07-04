@@ -1,0 +1,10 @@
+{
+  "title": "CC4302 Tarea 6",
+  "description": "Implementar postulaciones concurrentes usando spinlocks.",
+  "evaluation": "auto",
+  "maxMinutes": 240,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

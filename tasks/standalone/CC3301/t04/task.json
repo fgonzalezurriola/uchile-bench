@@ -1,0 +1,10 @@
+{
+  "title": "CC3301 Tarea 4",
+  "description": "Consultar eficientemente un diccionario persistente almacenado como árbol binario en disco.",
+  "environmentId": "cc3301",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

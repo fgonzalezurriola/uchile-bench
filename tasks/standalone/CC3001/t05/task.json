@@ -1,0 +1,10 @@
+{
+  "title": "CC3001 Tarea 5",
+  "description": "Implementar árboles binarios de búsqueda posicionales en Python.",
+  "environmentId": "cc3001",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

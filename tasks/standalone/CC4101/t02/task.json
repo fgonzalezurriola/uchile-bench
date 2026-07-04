@@ -1,0 +1,9 @@
+{
+  "title": "CC4101 Tarea 2",
+  "description": "Implementar lenguajes e intérpretes para polinomios y números complejos en Racket.",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

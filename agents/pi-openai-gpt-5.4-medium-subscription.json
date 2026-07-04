@@ -1,0 +1,11 @@
+{
+  "id": "pi-openai-gpt-5.4-medium-subscription",
+  "type": "pi",
+  "model": "gpt-5.4",
+  "provider": "openai-codex",
+  "thinking": "medium",
+  "timeoutMinutes": 15,
+  "dockerImage": "ai-task-bench-pi:latest",
+  "dockerfile": "docker/pi.Dockerfile",
+  "envAllowlist": []
+}

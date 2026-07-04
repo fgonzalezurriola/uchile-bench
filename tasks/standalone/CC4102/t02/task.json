@@ -1,0 +1,10 @@
+{
+  "title": "CC4102 Tarea 2",
+  "description": "Implementar y comparar variantes del algoritmo de Kruskal.",
+  "evaluation": "auto",
+  "maxMinutes": 360,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": false
+  }
+}

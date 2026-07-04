@@ -1,0 +1,9 @@
+{
+  "title": "CC4101 Tarea 3",
+  "description": "Implementar chequeo de tipos, interpretación y pattern matching en Racket.",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

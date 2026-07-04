@@ -1,0 +1,10 @@
+{
+  "title": "CC4101 Tarea 1",
+  "description": "Implementar operaciones sobre proposiciones y forma normal disyuntiva en Racket.",
+  "environmentId": "cc4101",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

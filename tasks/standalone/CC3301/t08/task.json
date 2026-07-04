@@ -1,0 +1,10 @@
+{
+  "title": "CC3301 Tarea 8",
+  "description": "Listar recursivamente los archivos modificados más recientemente.",
+  "environmentId": "cc3301",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

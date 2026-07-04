@@ -1,0 +1,11 @@
+{
+  "id": "cc3301",
+  "dockerImage": "ai-task-bench-cc3301:debian12",
+  "dockerfile": "docker/cc3301.Dockerfile",
+  "runtime": {
+    "cpuLimit": "2",
+    "memoryLimit": "4g",
+    "pidsLimit": 1024,
+    "networkMode": "host"
+  }
+}

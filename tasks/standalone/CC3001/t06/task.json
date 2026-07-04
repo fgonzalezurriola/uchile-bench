@@ -1,0 +1,10 @@
+{
+  "title": "CC3001 Tarea 6",
+  "description": "Comparar Quicksort original con la variante mediana de tres.",
+  "environmentId": "cc3001",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

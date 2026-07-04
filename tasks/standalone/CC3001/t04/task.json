@@ -1,0 +1,10 @@
+{
+  "title": "CC3001 Tarea 4",
+  "description": "Generar código para evaluar fórmulas representadas como árboles.",
+  "environmentId": "cc3001",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "CC3001 Tarea 1",
+  "description": "Resolver la tarea de pilas de arena abelianas en Python.",
+  "environmentId": "cc3001",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

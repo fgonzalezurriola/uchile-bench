@@ -1,0 +1,11 @@
+{
+  "title": "CC3501 Tarea 1",
+  "description": "Crear el diseño visual e interacción básica de un pinball 3D.",
+  "environmentId": "cc3501",
+  "evaluation": "auto",
+  "maxMinutes": 360,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": false
+  }
+}

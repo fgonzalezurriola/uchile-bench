@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "taskId": "CC3301/t02",
+  "generationId": "2026-06-29T14-11-07-157Z_pi-openai-gpt-5.5-high-subscription",
+  "agentId": "pi-openai-gpt-5.5-high-subscription",
+  "model": "gpt-5.5",
+  "image": "ai-task-bench-cc3301:debian12",
+  "draftHash": "e31ec94a29f7539b9328556eff1636f5bdcff41fd9ee9f0db392aeda1f2c8224",
+  "sourceRunPath": "/home/fgonz/dev/benchmark-uchile/ai-task-bench/runs/rubrics/CC3301/t02/2026-06-29T14-11-07-157Z_pi-openai-gpt-5.5-high-subscription"
+}

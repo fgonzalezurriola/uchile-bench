@@ -1,0 +1,10 @@
+{
+  "title": "CC3301 Tarea 1",
+  "description": "Eliminar cifras hexadecimales de un entero de 64 bits usando operaciones de bits en C.",
+  "environmentId": "cc3301",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

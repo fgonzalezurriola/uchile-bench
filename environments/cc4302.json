@@ -1,0 +1,11 @@
+{
+  "id": "cc4302",
+  "dockerImage": "ai-task-bench-cc4302:debian12",
+  "dockerfile": "docker/cc4302.Dockerfile",
+  "runtime": {
+    "cpuLimit": "2",
+    "memoryLimit": "4g",
+    "pidsLimit": 1024,
+    "networkMode": "host"
+  }
+}

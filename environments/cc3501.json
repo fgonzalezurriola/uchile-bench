@@ -1,0 +1,28 @@
+{
+  "id": "cc3501",
+  "dockerImage": "ai-task-bench-cc3501:debian12-uv-2024",
+  "dockerfile": "docker/cc3501.Dockerfile",
+  "runtime": {
+    "cpuLimit": "2",
+    "memoryLimit": "6g",
+    "pidsLimit": 512,
+    "networkMode": "host",
+    "environmentVariables": [
+      {
+        "key": "DISPLAY",
+        "value": ":99"
+      },
+      {
+        "key": "LIBGL_ALWAYS_SOFTWARE",
+        "value": "1"
+      },
+      {
+        "key": "MESA_LOADER_DRIVER_OVERRIDE",
+        "value": "llvmpipe"
+      }
+    ],
+    "extraDockerArgs": [
+      "--shm-size=1g"
+    ]
+  }
+}

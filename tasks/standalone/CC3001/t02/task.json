@@ -1,0 +1,10 @@
+{
+  "title": "CC3001 Tarea 2",
+  "description": "Implementar una calculadora de expresiones restringidas en Python.",
+  "environmentId": "cc3001",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

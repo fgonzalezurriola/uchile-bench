@@ -1,0 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "rango.h"
+
+void eliminarRango(Nodo **phead, double y, double z) {
+  ...
+}

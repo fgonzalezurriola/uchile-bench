@@ -1,0 +1,10 @@
+{
+  "title": "CC4303 Tarea 2",
+  "description": "Implementar un resolver DNS iterativo con respuestas compatibles con dig y caché.",
+  "evaluation": "auto",
+  "maxMinutes": 240,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "cc3001",
+  "dockerImage": "ai-task-bench-cc3001:debian12-2023",
+  "dockerfile": "docker/cc3001.Dockerfile",
+  "runtime": {
+    "cpuLimit": "2",
+    "memoryLimit": "4g",
+    "pidsLimit": 256,
+    "networkMode": "host",
+    "environmentVariables": [
+      {
+        "key": "MPLBACKEND",
+        "value": "Agg"
+      }
+    ]
+  }
+}

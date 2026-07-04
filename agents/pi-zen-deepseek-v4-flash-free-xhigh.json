@@ -1,0 +1,11 @@
+{
+  "id": "pi-zen-deepseek-v4-flash-free-xhigh",
+  "type": "pi",
+  "model": "opencode/deepseek-v4-flash-free",
+  "provider": "opencode",
+  "apiKey": "public",
+  "thinking": "xhigh",
+  "timeoutMinutes": 15,
+  "dockerImage": "ai-task-bench-pi:latest",
+  "envAllowlist": []
+}

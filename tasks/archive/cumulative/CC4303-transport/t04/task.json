@@ -1,0 +1,11 @@
+{
+  "title": "CC4303 Tarea 4",
+  "description": "Extender la implementación de transporte con Go-Back-N y control de congestión estilo TCP Tahoe.",
+  "environmentId": "cc4303",
+  "evaluation": "auto",
+  "maxMinutes": 240,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

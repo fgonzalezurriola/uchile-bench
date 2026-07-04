@@ -1,0 +1,11 @@
+{
+  "id": "cc4101",
+  "dockerImage": "ai-task-bench-cc4101:debian12-play",
+  "dockerfile": "docker/cc4101.Dockerfile",
+  "runtime": {
+    "cpuLimit": "2",
+    "memoryLimit": "4g",
+    "pidsLimit": 256,
+    "networkMode": "host"
+  }
+}

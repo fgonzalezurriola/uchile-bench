@@ -1,0 +1,30 @@
+[
+  {
+    "courseId": "CC3001",
+    "environmentId": "cc3001"
+  },
+  {
+    "courseId": "CC3301",
+    "environmentId": "cc3301"
+  },
+  {
+    "courseId": "CC3501",
+    "environmentId": "cc3501"
+  },
+  {
+    "courseId": "CC4101",
+    "environmentId": "cc4101"
+  },
+  {
+    "courseId": "CC4102",
+    "environmentId": "cc4102"
+  },
+  {
+    "courseId": "CC4302",
+    "environmentId": "cc4302"
+  },
+  {
+    "courseId": "CC4303",
+    "environmentId": "cc4303"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "title": "CC3501 Tarea 2",
+  "description": "Extender el pinball anterior con apariencia, simulación física e iluminación.",
+  "environmentId": "cc3501",
+  "evaluation": "auto",
+  "maxMinutes": 360,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": false
+  }
+}

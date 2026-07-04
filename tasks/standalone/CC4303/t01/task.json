@@ -1,0 +1,10 @@
+{
+  "title": "CC4303 Tarea 1",
+  "description": "Construir un proxy HTTP con filtrado de sitios, reemplazo de contenido y manejo de mensajes grandes.",
+  "evaluation": "auto",
+  "maxMinutes": 240,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

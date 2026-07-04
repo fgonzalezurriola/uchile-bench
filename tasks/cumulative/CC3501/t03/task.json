@@ -1,0 +1,11 @@
+{
+  "title": "CC3501 Tarea 3",
+  "description": "Crear una demostración gráfica relacionada con la materia del curso.",
+  "evaluation": "auto",
+  "environmentId": "cc3501",
+  "maxMinutes": 360,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": false
+  }
+}

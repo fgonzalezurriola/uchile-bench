@@ -1,0 +1,11 @@
+{
+  "title": "CC4303 Tarea 6",
+  "description": "Implementar fragmentación y reensamblaje de datagramas IP en un mini-Internet.",
+  "environmentId": "cc4303",
+  "evaluation": "auto",
+  "maxMinutes": 240,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": false
+  }
+}

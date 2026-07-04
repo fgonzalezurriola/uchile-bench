@@ -1,0 +1,10 @@
+dir2/igualesB/dir2/error-arch/sin-permiso
+dir2/igualesB/dir1/dir-inconsistente2
+dir2/igualesB/dir1/igualesB/dir2/error-arch/sin-permiso
+dir2/igualesB/dir2/dir-inconsistente
+dir2/igualesB/dir1/igualesB/dir1/igualesB/dir1/error-arch/sin-permiso
+dir2/igualesB/dir1/igualesB/dir1/dir-inconsistente2
+dir2/error-arch/sin-permiso
+dir2/igualesB/dir1/igualesB/dir1/igualesB/dir1/dir-inconsistente2
+dir2/igualesB/dir1/error-arch/sin-permiso
+dir2/igualesB/dir1/igualesB/dir1/error-arch/sin-permiso

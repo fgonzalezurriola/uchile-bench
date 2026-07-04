@@ -1,0 +1,10 @@
+{
+  "title": "CC3001 Tarea 3",
+  "description": "Resolver Sudoku usando backtracking en Python.",
+  "environmentId": "cc3001",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

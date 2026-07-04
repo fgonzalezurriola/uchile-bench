@@ -1,0 +1,13 @@
+{
+  "id": "pi-minimax-m3-high-api",
+  "type": "pi",
+  "model": "MiniMax-M3",
+  "provider": "minimax",
+  "thinking": "high",
+  "timeoutMinutes": 15,
+  "dockerImage": "ai-task-bench-pi:latest",
+  "dockerfile": "docker/pi.Dockerfile",
+  "envAllowlist": [
+    "MINIMAX_API_KEY"
+  ]
+}

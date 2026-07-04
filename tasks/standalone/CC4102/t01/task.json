@@ -1,0 +1,11 @@
+{
+  "title": "CC4102 Tarea 1",
+  "description": "Implementar y comparar Mergesort externo y Quicksort externo.",
+  "environmentId": "cc4102",
+  "evaluation": "auto",
+  "maxMinutes": 360,
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": false
+  }
+}

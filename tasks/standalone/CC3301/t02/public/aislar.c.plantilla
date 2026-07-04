@@ -1,0 +1,15 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#include "aislar.h"
+
+int aislar_palabras(char *s) {
+  ...
+}
+
+char *palabras(char *s) {
+  ...
+}

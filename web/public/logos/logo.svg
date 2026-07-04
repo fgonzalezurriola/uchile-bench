@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- UCH Monogram: Premium Clean Blue Gradient -->
+  <defs>
+    <linearGradient id="uchBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1677FF" />
+      <stop offset="100%" stop-color="#00A3FF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Letter U -->
+  <path d="M 17 34 L 17 59 A 7 7 0 0 0 31 59 L 31 34" 
+        fill="none" 
+        stroke="url(#uchBlueGradient)" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Letter C -->
+  <path d="M 59 34 L 57 34 A 16 16 0 0 0 57 66 L 59 66" 
+        fill="none" 
+        stroke="url(#uchBlueGradient)" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Letter H -->
+  <path d="M 69 34 L 69 66 M 83 34 L 83 66 M 69 50 L 83 50" 
+        fill="none" 
+        stroke="url(#uchBlueGradient)" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+</svg>

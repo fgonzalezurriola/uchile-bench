@@ -1,0 +1,10 @@
+{
+  "title": "CC3301 Tarea 5",
+  "description": "Modificar un algoritmo de ordenamiento en C y assembler RISC-V para ignorar mayúsculas.",
+  "environmentId": "cc3301",
+  "evaluation": "auto",
+  "notes": {
+    "languageSpecified": true,
+    "starterProvided": true
+  }
+}

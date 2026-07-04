@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "taskId": "CC4303-transport/t04",
+  "generationId": "2026-06-29T18-08-59-542Z_pi-openai-gpt-5.5-high-subscription",
+  "agentId": "pi-openai-gpt-5.5-high-subscription",
+  "model": "gpt-5.5",
+  "image": "ai-task-bench-pi:latest",
+  "draftHash": "3d7235a1125c3b7945eead609aa173e522fc7e3e3ca08b0817128792139d42d4",
+  "sourceRunPath": "/home/fgonz/dev/benchmark-uchile/ai-task-bench/runs/rubrics/CC4303/t04/2026-06-29T18-08-59-542Z_pi-openai-gpt-5.5-high-subscription"
+}

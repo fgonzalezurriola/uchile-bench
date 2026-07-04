@@ -1,0 +1,11 @@
+{
+  "id": "pi-zen-mimo-v2.5-free-high",
+  "type": "pi",
+  "model": "opencode/mimo-v2.5-free",
+  "provider": "opencode",
+  "apiKey": "public",
+  "thinking": "high",
+  "timeoutMinutes": 15,
+  "dockerImage": "ai-task-bench-pi:latest",
+  "envAllowlist": []
+}
