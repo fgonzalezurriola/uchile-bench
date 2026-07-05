@@ -45,3 +45,28 @@ export const targetKind = (
   target: BenchmarkTarget,
 ): "standalone" | "cumulative" =>
   target._tag === "StandaloneTask" ? "standalone" : "cumulative"
+
+const compareTargetParts = (left: string, right: string): number =>
+  left.localeCompare(right, "en")
+
+export const targetCourseKeyFromId = (targetId: string): string => {
+  const [courseKey] = targetId.split("/")
+  return courseKey ?? targetId
+}
+
+export const targetTaskKeyFromId = (targetId: string): string => {
+  const parts = targetId.split("/")
+  return parts[parts.length - 1] ?? targetId
+}
+
+export const compareTargetIdsByTask = (left: string, right: string): number => {
+  const leftCourseKey = targetCourseKeyFromId(left)
+  const rightCourseKey = targetCourseKeyFromId(right)
+  const byCourseKey = compareTargetParts(leftCourseKey, rightCourseKey)
+  if (byCourseKey !== 0) return byCourseKey
+  const leftTaskKey = targetTaskKeyFromId(left)
+  const rightTaskKey = targetTaskKeyFromId(right)
+  const byTaskKey = compareTargetParts(leftTaskKey, rightTaskKey)
+  if (byTaskKey !== 0) return byTaskKey
+  return compareTargetParts(left, right)
+}

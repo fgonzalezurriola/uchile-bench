@@ -113,7 +113,7 @@ La solución debe coordinar múltiples threads que representan damas y varones e
 ## Escala final
 
 - Puntaje máximo original por sección o total: no especificado en los materiales.
-- Puntaje máximo total propuesto: 7.0 puntos.
+- Puntaje máximo total propuesto: 8.0 puntos.
 - Ponderación entre secciones: no corresponde.
 - Nota mínima del benchmark: 1.0
 - Nota máxima del benchmark: 7.0

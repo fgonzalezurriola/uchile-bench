@@ -2,6 +2,7 @@ import { Context, Effect, Layer, Schema } from "effect"
 import path from "node:path"
 import {
   BenchmarkTargetIdSchema,
+  compareTargetIdsByTask,
   type BenchmarkTarget,
   type BenchmarkTargetId,
   type CumulativeSequence,
@@ -353,7 +354,7 @@ const makeCatalog = Effect.fnUntraced(function*(tasksRoot: string) {
       targets.push(yield* loadCumulativeTarget(sequenceDir))
     }
 
-    targets.sort((left, right) => compareCatalogNames(left.id, right.id))
+    targets.sort((left, right) => compareTargetIdsByTask(left.id, right.id))
     for (let index = 1; index < targets.length; index++) {
       const previous = targets[index - 1]
       const current = targets[index]

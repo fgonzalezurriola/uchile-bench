@@ -29,16 +29,18 @@ afterEach(() => {
 })
 
 describe("RunStoreService", () => {
-  test("normalizes legacy structured errors while loading run.json", async () => {
+  test("normalizes legacy structured errors and stale absolute paths while loading run.json", async () => {
     const runDirectory = makeTemporaryDirectory()
+    const staleRoot = path.join(makeTemporaryDirectory(), "old-checkout")
     const paths = {
-      input: path.join(runDirectory, "00-input"),
-      workspace: path.join(runDirectory, "01-workspace"),
-      agentHome: path.join(runDirectory, "02-agent-home"),
-      agentConfig: path.join(runDirectory, "03-agent-config"),
-      output: path.join(runDirectory, "04-output"),
-      evidence: path.join(runDirectory, "05-evidence"),
-      review: path.join(runDirectory, "06-review"),
+      input: path.join(staleRoot, "00-input"),
+      workspace: path.join(staleRoot, "01-workspace"),
+      agentHome: path.join(staleRoot, "02-agent-home"),
+      agentConfig: path.join(staleRoot, "03-agent-config"),
+      output: path.join(staleRoot, "04-output"),
+      evidence: path.join(staleRoot, "05-evidence"),
+      review: path.join(staleRoot, "06-review"),
+      session: path.join(staleRoot, "07-session"),
     }
     writeFileSync(
       path.join(runDirectory, "run.json"),
@@ -83,6 +85,13 @@ describe("RunStoreService", () => {
     )
 
     assert.equal(run.error, "Interrupted by reviewer")
+    assert.equal(run.paths.input, path.join(runDirectory, "00-input"))
+    assert.equal(run.paths.workspace, path.join(runDirectory, "01-workspace"))
+    assert.equal(run.paths.agentHome, path.join(runDirectory, "02-agent-home"))
+    assert.equal(run.paths.agentConfig, path.join(runDirectory, "03-agent-config"))
+    assert.equal(run.paths.output, path.join(runDirectory, "04-output"))
+    assert.equal(run.paths.evidence, path.join(runDirectory, "05-evidence"))
+    assert.equal(run.paths.review, path.join(runDirectory, "06-review"))
     assert.equal(run.paths.session, path.join(runDirectory, "07-session"))
     assert.equal(run.metrics.totalTokens, null)
   })

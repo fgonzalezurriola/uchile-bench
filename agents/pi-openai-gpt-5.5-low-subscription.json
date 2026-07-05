@@ -4,7 +4,7 @@
   "model": "gpt-5.5",
   "provider": "openai-codex",
   "thinking": "low",
-  "timeoutMinutes": 15,
+  "timeoutMinutes": 120,
   "dockerImage": "ai-task-bench-pi:latest",
   "dockerfile": "docker/pi.Dockerfile",
   "envAllowlist": []

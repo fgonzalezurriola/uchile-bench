@@ -4,7 +4,7 @@
   "model": "MiniMax-M3",
   "provider": "minimax",
   "thinking": "high",
-  "timeoutMinutes": 15,
+  "timeoutMinutes": 120,
   "dockerImage": "ai-task-bench-pi:latest",
   "dockerfile": "docker/pi.Dockerfile",
   "envAllowlist": [

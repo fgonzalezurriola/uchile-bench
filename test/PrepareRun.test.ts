@@ -9,12 +9,13 @@ import {
 } from "node:fs"
 import { tmpdir } from "node:os"
 import path from "node:path"
-import { Effect, Schema } from "effect"
+import { Effect, Layer, Schema } from "effect"
 import type { AgentConfig } from "../src/domain/Agent.js"
 import { makeRun, type RunPaths } from "../src/domain/Run.js"
 import { TaskIdSchema, type ResolvedTask } from "../src/domain/Task.js"
 import { prepareRun } from "../src/programs/prepareRun.js"
 import { FileSystemServiceLive } from "../src/services/FileSystemService.js"
+import { RunStoreServiceLive } from "../src/services/RunStoreService.js"
 
 const temporaryDirectories: string[] = []
 
@@ -39,6 +40,11 @@ const makePaths = (runDirectory: string): RunPaths => ({
   review: path.join(runDirectory, "06-review"),
   session: path.join(runDirectory, "07-session"),
 })
+
+const PrepareRunLayer = Layer.mergeAll(
+  FileSystemServiceLive,
+  RunStoreServiceLive.pipe(Layer.provide(FileSystemServiceLive)),
+)
 
 afterEach(() => {
   for (const directory of temporaryDirectories.splice(0)) {
@@ -113,7 +119,7 @@ describe("prepareRun", () => {
         "new-run",
         path.join(root, "runs"),
         { _tag: "PreviousStageOutput", previousRun },
-      ).pipe(Effect.provide(FileSystemServiceLive)),
+      ).pipe(Effect.provide(PrepareRunLayer)),
     )
 
     assert.equal(
@@ -127,6 +133,19 @@ describe("prepareRun", () => {
     assert.equal(
       readFileSync(path.join(result.paths.workspace, "new-file.txt"), "utf8"),
       "new\n",
+    )
+    assert.deepEqual(
+      JSON.parse(readFileSync(path.join(root, "runs", "new-run", "run.json"), "utf8")).paths,
+      {
+        input: "00-input",
+        workspace: "01-workspace",
+        agentHome: "02-agent-home",
+        agentConfig: "03-agent-config",
+        output: "04-output",
+        evidence: "05-evidence",
+        review: "06-review",
+        session: "07-session",
+      },
     )
   })
 })

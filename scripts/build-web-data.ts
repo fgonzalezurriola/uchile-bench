@@ -75,6 +75,64 @@ type VerdictRecord = {
   readonly grade: number;
   readonly confidence: string;
   readonly summary: string;
+  readonly detail: VerdictDetailRecord;
+};
+
+type VerdictEvidenceRecord = {
+  readonly path: string;
+  readonly lines: string | null;
+  readonly description: string;
+};
+
+type VerdictDeductionRecord = {
+  readonly id: string;
+  readonly rootCauseId: string;
+  readonly origin: string;
+  readonly points: number;
+  readonly reason: string;
+  readonly evidence: readonly VerdictEvidenceRecord[];
+};
+
+type VerdictCriterionRecord = {
+  readonly criterionId: string;
+  readonly title: string;
+  readonly awardedPoints: number;
+  readonly maximumPoints: number;
+  readonly weight: number;
+  readonly justification: string;
+  readonly evidence: readonly VerdictEvidenceRecord[];
+  readonly deductions: readonly VerdictDeductionRecord[];
+};
+
+type VerdictGradeAdjustmentRecord = {
+  readonly ruleId: string;
+  readonly operation: string;
+  readonly value: number;
+  readonly triggered: boolean;
+  readonly justification: string;
+  readonly evidence: readonly VerdictEvidenceRecord[];
+};
+
+type VerdictCommandRecord = {
+  readonly command: string;
+  readonly exitCode: number | null;
+  readonly summary: string;
+};
+
+type VerdictInheritedObservationRecord = {
+  readonly id: string;
+  readonly description: string;
+  readonly effectOnCurrentAssignment: string;
+  readonly evidence: readonly VerdictEvidenceRecord[];
+};
+
+type VerdictDetailRecord = {
+  readonly criteria: readonly VerdictCriterionRecord[];
+  readonly gradeAdjustments: readonly VerdictGradeAdjustmentRecord[];
+  readonly commands: readonly VerdictCommandRecord[];
+  readonly inheritedObservations: readonly VerdictInheritedObservationRecord[];
+  readonly criticalErrors: readonly string[];
+  readonly humanReviewItems: readonly string[];
 };
 
 type TargetRecord = {
@@ -91,6 +149,7 @@ type ResultRecord = {
   readonly grade: number | null;
   readonly confidence: string | null;
   readonly summary: string | null;
+  readonly verdictDetail: VerdictDetailRecord | null;
   readonly costUsd: number | null;
   readonly totalTokens: number | null;
   readonly inputTokens: number | null;
@@ -148,6 +207,21 @@ const optionalNumber = (record: Record<string, unknown>, key: string): number =>
   const value = record[key];
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 };
+
+const stringValue = (value: unknown): string | null =>
+  typeof value === "string" ? value : null;
+
+const numberValue = (value: unknown): number | null =>
+  typeof value === "number" && Number.isFinite(value) ? value : null;
+
+const booleanValue = (value: unknown): boolean | null =>
+  typeof value === "boolean" ? value : null;
+
+const recordsArray = (value: unknown): readonly Record<string, unknown>[] =>
+  Array.isArray(value) ? value.filter(isRecord) : [];
+
+const stringsArray = (value: unknown): readonly string[] =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 
 const walkFiles = (dir: string, fileName: string): readonly string[] => {
   const out: string[] = [];
@@ -313,10 +387,121 @@ const parseVerdict = (path: string): VerdictRecord | null => {
     return null;
   }
 
+  const parseEvidence = (value: unknown): readonly VerdictEvidenceRecord[] =>
+    recordsArray(value).flatMap((item) => {
+      const evidencePath = stringValue(item.path);
+      const description = stringValue(item.description);
+      if (evidencePath === null || description === null) {
+        return [];
+      }
+      return [{
+        path: evidencePath,
+        lines: stringValue(item.lines),
+        description,
+      }];
+    });
+
+  const parseDeductions = (value: unknown): readonly VerdictDeductionRecord[] =>
+    recordsArray(value).flatMap((item) => {
+      const id = stringValue(item.id);
+      const rootCauseId = stringValue(item.rootCauseId);
+      const origin = stringValue(item.origin);
+      const points = numberValue(item.points);
+      const reason = stringValue(item.reason);
+      if (id === null || rootCauseId === null || origin === null || points === null || reason === null) {
+        return [];
+      }
+      return [{
+        id,
+        rootCauseId,
+        origin,
+        points,
+        reason,
+        evidence: parseEvidence(item.evidence),
+      }];
+    });
+
   return {
     grade,
     confidence: typeof raw.confidence === "string" ? raw.confidence : "unknown",
     summary: typeof raw.summary === "string" ? raw.summary : "",
+    detail: {
+      criteria: recordsArray(raw.criteria).flatMap((item) => {
+        const criterionId = stringValue(item.criterionId);
+        const title = stringValue(item.title);
+        const awardedPoints = numberValue(item.awardedPoints);
+        const maximumPoints = numberValue(item.maximumPoints);
+        const weight = numberValue(item.weight);
+        const justification = stringValue(item.justification);
+        if (
+          criterionId === null ||
+          title === null ||
+          awardedPoints === null ||
+          maximumPoints === null ||
+          weight === null ||
+          justification === null
+        ) {
+          return [];
+        }
+        return [{
+          criterionId,
+          title,
+          awardedPoints,
+          maximumPoints,
+          weight,
+          justification,
+          evidence: parseEvidence(item.evidence),
+          deductions: parseDeductions(item.deductions),
+        }];
+      }),
+      gradeAdjustments: recordsArray(raw.gradeAdjustments).flatMap((item) => {
+        const ruleId = stringValue(item.ruleId);
+        const operation = stringValue(item.operation);
+        const value = numberValue(item.value);
+        const triggered = booleanValue(item.triggered);
+        const justification = stringValue(item.justification);
+        if (ruleId === null || operation === null || value === null || triggered === null || justification === null) {
+          return [];
+        }
+        return [{
+          ruleId,
+          operation,
+          value,
+          triggered,
+          justification,
+          evidence: parseEvidence(item.evidence),
+        }];
+      }),
+      commands: recordsArray(raw.commands).flatMap((item) => {
+        const command = stringValue(item.command);
+        const exitCode = numberValue(item.exitCode);
+        const summary = stringValue(item.summary);
+        if (command === null || summary === null) {
+          return [];
+        }
+        return [{
+          command,
+          exitCode,
+          summary,
+        }];
+      }),
+      inheritedObservations: recordsArray(raw.inheritedObservations).flatMap((item) => {
+        const id = stringValue(item.id);
+        const description = stringValue(item.description);
+        const effectOnCurrentAssignment = stringValue(item.effectOnCurrentAssignment);
+        if (id === null || description === null || effectOnCurrentAssignment === null) {
+          return [];
+        }
+        return [{
+          id,
+          description,
+          effectOnCurrentAssignment,
+          evidence: parseEvidence(item.evidence),
+        }];
+      }),
+      criticalErrors: stringsArray(raw.criticalErrors),
+      humanReviewItems: stringsArray(raw.humanReviewItems),
+    },
   };
 };
 
@@ -386,6 +571,7 @@ const buildResult = (
       grade: null,
       confidence: null,
       summary: null,
+      verdictDetail: null,
       costUsd: null,
       totalTokens: null,
       inputTokens: null,
@@ -417,6 +603,7 @@ const buildResult = (
     grade: verdict?.grade ?? null,
     confidence: verdict?.confidence ?? null,
     summary: verdict?.summary ?? null,
+    verdictDetail: verdict?.detail ?? null,
     costUsd: estimateApiCost(run),
     totalTokens: run.metrics.totalTokens,
     inputTokens: run.metrics.inputTokens,

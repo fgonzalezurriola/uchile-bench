@@ -5,6 +5,7 @@ import type { Run, RunPaths } from "../domain/Run.js"
 import { makeRun } from "../domain/Run.js"
 import type { ResolvedTask } from "../domain/Task.js"
 import { FileSystemService } from "../services/FileSystemService.js"
+import { RunStoreService } from "../services/RunStoreService.js"
 
 /** Input used to initialize an individual task-stage run. */
 export type RunInput =
@@ -60,6 +61,7 @@ export const prepareRun = Effect.fnUntraced(function*(
   environmentId: string | null = null,
 ) {
   const fs = yield* FileSystemService
+  const runStore = yield* RunStoreService
   const runDir = path.resolve(runParentDir, runId)
   const paths: RunPaths = {
     input: `${runDir}/00-input`,
@@ -99,7 +101,7 @@ export const prepareRun = Effect.fnUntraced(function*(
     paths,
     environmentId,
   )
-  yield* fs.writeJson(`${runDir}/run.json`, run)
+  yield* runStore.saveRun(run, runDir)
   yield* fs.writeJson(
     `${runDir}/input-source.json`,
     describeRunInput(task, input),

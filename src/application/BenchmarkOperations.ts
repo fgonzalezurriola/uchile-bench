@@ -1,6 +1,9 @@
 import { Clock, DateTime, Effect, Option, Schema } from "effect"
 import path from "node:path"
-import type { BenchmarkTarget } from "../domain/BenchmarkTarget.js"
+import {
+  compareTargetIdsByTask,
+  type BenchmarkTarget,
+} from "../domain/BenchmarkTarget.js"
 import { EvidenceFile, SessionFile, TransientSessionFile } from "../domain/Evidence.js"
 import {
   matchesExperimentPrefix,
@@ -612,7 +615,8 @@ export const getExperimentStatus = Effect.fnUntraced(function*(
     solverAgentId,
     ...(options.prefix === undefined ? {} : { prefix: options.prefix }),
     runs: items.sort((left, right) =>
-      `${left.taskId}/${left.runId}`.localeCompare(`${right.taskId}/${right.runId}`),
+      compareTargetIdsByTask(left.taskId, right.taskId) ||
+      left.runId.localeCompare(right.runId, "en"),
     ),
   } satisfies ExperimentStatus
 })

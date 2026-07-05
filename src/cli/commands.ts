@@ -156,7 +156,7 @@ cli
   })
 
 cli
-  .command("experiment <action> <agent>", "Run, judge, or inspect an experiment")
+  .command("experiment <action> [agent]", "Run, judge, or inspect an experiment")
   .option("--prefix <prefix>", "Filter targets by Target Catalog prefix")
   .option("--concurrency <n>", "Number of targets or Runs to process concurrently")
   .option("--runs <n>", "Number of independent Runs", { default: "1" })
@@ -166,7 +166,7 @@ cli
   .option("--force", "Allow another AI Review from the same judge")
   .action(async (
     action: string,
-    agent: string,
+    agent: string | undefined,
     options: {
       prefix?: string
       concurrency?: string | number
@@ -178,6 +178,11 @@ cli
     },
   ) => {
     if (action === "run") {
+      if (agent === undefined) {
+        console.error("Missing required argument: agent")
+        process.exitCode = 1
+        return
+      }
       const runs = await Effect.runPromise(parseRunCount(options.runs))
       const timeoutMs = parseTimeoutMs(options.timeoutMinutes)
       renderExperimentRun(
@@ -195,6 +200,11 @@ cli
     }
 
     if (action === "judge") {
+      if (agent === undefined) {
+        console.error("Missing required argument: agent")
+        process.exitCode = 1
+        return
+      }
       renderExperimentJudge(await runApplication(judgeExperiment(agent, {
         judgeAliasOrId: options.judge,
         force: options.force ?? false,
@@ -210,9 +220,21 @@ cli
       const statusOptions = options.prefix === undefined
         ? {}
         : { prefix: options.prefix }
-      renderExperimentStatus(
-        await runApplication(getExperimentStatus(agent, statusOptions, runsRoot)),
-      )
+      if (agent !== undefined) {
+        renderExperimentStatus(
+          await runApplication(getExperimentStatus(agent, statusOptions, runsRoot)),
+        )
+        return
+      }
+
+      const agents = await runApplication(listAgents())
+      const configuredAgents = agents.map((item) => item.agentId)
+      for (const [index, agentId] of configuredAgents.entries()) {
+        renderExperimentStatus(
+          await runApplication(getExperimentStatus(agentId, statusOptions, runsRoot)),
+        )
+        if (index < configuredAgents.length - 1) console.log("")
+      }
       return
     }
 

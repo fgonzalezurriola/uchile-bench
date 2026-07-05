@@ -16,6 +16,28 @@ const emptyMetrics = (): RunMetrics => ({
   totalThinkingChars: null,
 })
 
+const runPathsFor = (runDir: string) => ({
+  input: path.join(runDir, "00-input"),
+  workspace: path.join(runDir, "01-workspace"),
+  agentHome: path.join(runDir, "02-agent-home"),
+  agentConfig: path.join(runDir, "03-agent-config"),
+  output: path.join(runDir, "04-output"),
+  evidence: path.join(runDir, "05-evidence"),
+  review: path.join(runDir, "06-review"),
+  session: path.join(runDir, "07-session"),
+})
+
+const persistedRunPaths = {
+  input: "00-input",
+  workspace: "01-workspace",
+  agentHome: "02-agent-home",
+  agentConfig: "03-agent-config",
+  output: "04-output",
+  evidence: "05-evidence",
+  review: "06-review",
+  session: "07-session",
+}
+
 /** Persistence and legacy normalization for individual `run.json` records. */
 export class RunStoreService extends Context.Service<
   RunStoreService,
@@ -41,7 +63,10 @@ export const RunStoreServiceLive = Layer.effect(
 
     const saveRun = Effect.fnUntraced(function*(run: Run, runDir: string) {
       yield* fs.mkdirRecursive(runDir)
-      yield* fs.writeJson(`${runDir}/run.json`, run)
+      yield* fs.writeJson(`${runDir}/run.json`, {
+        ...run,
+        paths: persistedRunPaths,
+      })
     })
 
     const loadRun = Effect.fnUntraced(function*(runDir: string) {
@@ -61,10 +86,7 @@ export const RunStoreServiceLive = Layer.effect(
       return {
         ...decoded,
         environmentId: decoded.environmentId ?? null,
-        paths: {
-          ...decoded.paths,
-          session: decoded.paths.session ?? `${runDir}/07-session`,
-        },
+        paths: runPathsFor(runDir),
         metrics: decoded.metrics ?? emptyMetrics(),
         error:
           decoded.error === null || typeof decoded.error === "string"

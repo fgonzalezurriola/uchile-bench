@@ -1,6 +1,16 @@
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CSSProperties } from "react";
 import { useMemo, useState, Fragment } from "react";
+import { marked } from "marked";
+
+const renderMarkdown = (text: string): string => {
+  if (!text) return "";
+  try {
+    return marked.parse(text) as string;
+  } catch (e) {
+    return text;
+  }
+};
 
 type Solver = {
   readonly id: string;
@@ -18,6 +28,63 @@ type Target = {
   readonly kind: "standalone" | "cumulative-stage";
 };
 
+type VerdictEvidence = {
+  readonly path: string;
+  readonly lines: string | null;
+  readonly description: string;
+};
+
+type VerdictDeduction = {
+  readonly id: string;
+  readonly rootCauseId: string;
+  readonly origin: string;
+  readonly points: number;
+  readonly reason: string;
+  readonly evidence: readonly VerdictEvidence[];
+};
+
+type VerdictCriterion = {
+  readonly criterionId: string;
+  readonly title: string;
+  readonly awardedPoints: number;
+  readonly maximumPoints: number;
+  readonly weight: number;
+  readonly justification: string;
+  readonly evidence: readonly VerdictEvidence[];
+  readonly deductions: readonly VerdictDeduction[];
+};
+
+type VerdictGradeAdjustment = {
+  readonly ruleId: string;
+  readonly operation: string;
+  readonly value: number;
+  readonly triggered: boolean;
+  readonly justification: string;
+  readonly evidence: readonly VerdictEvidence[];
+};
+
+type VerdictCommand = {
+  readonly command: string;
+  readonly exitCode: number | null;
+  readonly summary: string;
+};
+
+type VerdictInheritedObservation = {
+  readonly id: string;
+  readonly description: string;
+  readonly effectOnCurrentAssignment: string;
+  readonly evidence: readonly VerdictEvidence[];
+};
+
+type VerdictDetail = {
+  readonly criteria: readonly VerdictCriterion[];
+  readonly gradeAdjustments: readonly VerdictGradeAdjustment[];
+  readonly commands: readonly VerdictCommand[];
+  readonly inheritedObservations: readonly VerdictInheritedObservation[];
+  readonly criticalErrors: readonly string[];
+  readonly humanReviewItems: readonly string[];
+};
+
 type Result = {
   readonly taskId: string;
   readonly solverId: string;
@@ -25,6 +92,7 @@ type Result = {
   readonly grade: number | null;
   readonly confidence: string | null;
   readonly summary: string | null;
+  readonly verdictDetail: VerdictDetail | null;
   readonly costUsd: number | null;
   readonly totalTokens: number | null;
   readonly inputTokens: number | null;
@@ -135,9 +203,10 @@ type SessionData = {
 const queryClient = new QueryClient();
 
 const fetchJson = async <T,>(url: string): Promise<T> => {
-  const response = await fetch(url);
+  const absoluteUrl = url.startsWith("/") || url.startsWith("http") ? url : `/${url}`;
+  const response = await fetch(absoluteUrl);
   if (!response.ok) {
-    throw new Error(`No se pudo cargar ${url}`);
+    throw new Error(`No se pudo cargar ${absoluteUrl}`);
   }
   return await response.json() as T;
 };
@@ -325,7 +394,7 @@ function AssistantTurn({ turn, toolResultMap }: {
     return (
       <article className="turn turn-assistant">
         <div className="turn-role">assistant · #{turn.index ?? 0}</div>
-        <pre className="turn-text">{text}</pre>
+        <div className="turn-text markdown-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }} />
       </article>
     );
   }
@@ -343,7 +412,7 @@ function AssistantTurn({ turn, toolResultMap }: {
           const result = toolResultMap.get(item.toolCall.id);
           return <ToolCallBlock key={i} item={item} result={result} />;
         }
-        return <pre className="turn-text" key={i}>{item.text}</pre>;
+        return <div className="turn-text markdown-body" key={i} dangerouslySetInnerHTML={{ __html: renderMarkdown(item.text) }} />;
       })}
     </article>
   );
@@ -354,7 +423,7 @@ function UserTurn({ turn }: { readonly turn: SessionTurn }) {
   return (
     <article className="turn turn-user">
       <div className="turn-role">user · #{turn.index ?? 0}</div>
-      <pre className="turn-text">{text}</pre>
+      <div className="turn-text markdown-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }} />
     </article>
   );
 }
@@ -500,8 +569,15 @@ function TokensView({ manifest }: { readonly manifest: Manifest }) {
       {manifest.summaries.map((summary) => (
         <article className="wide-metric" key={summary.solverId}>
           <div className="wide-metric-label">
-            <ModelName label={summary.shortLabel} reasoning={summary.reasoning} color={summary.color} logo={summary.logo} loading="lazy" />
-            <strong>{fmtCompact(summary.totalTokens)} tokens</strong>
+            <span className="model-name">
+              {summary.logo ? (
+                <img src={summary.logo} alt="" className="model-logo" loading="lazy" />
+              ) : (
+                <span className="dot" style={{ "--dot-color": summary.color } as CSSProperties} />
+              )}
+              <span>{summary.shortLabel}</span>
+            </span>
+            <strong className="tokens-total">{fmtCompact(summary.totalTokens)} tokens</strong>
           </div>
           <div className="bar-row stacked">
             <span>Total tokens</span>
@@ -520,7 +596,7 @@ function TokensView({ manifest }: { readonly manifest: Manifest }) {
             <div className="bar-track">
               <div className="bar-fill muted-fill" style={{ width: barPercent(summary.toolCalls, maxTools) }} />
             </div>
-            <b>{fmtCompact(summary.toolCalls)}</b>
+            <b className="fixed-count">{summary.toolCalls.toLocaleString("en-US")}</b>
           </div>
         </article>
       ))}
@@ -609,34 +685,227 @@ function SessionConversation({ session, result }: {
   return (
     <>
       <SessionHeader session={session} result={result} />
-      <div className="turn-list">
-        {visibleTurns.map((turn, i) => {
-          if (turn.role === "user") {
-            return <UserTurn key={`${turn.index ?? i}-user`} turn={turn} />;
-          }
-          if (turn.role === "assistant") {
-            return <AssistantTurn key={`${turn.index ?? i}-assistant`} turn={turn} toolResultMap={toolResultMap} />;
-          }
-          return (
-            <article className="turn" key={`${turn.index ?? i}-${turn.role ?? "turn"}`}>
-              <div className="turn-role">{turn.role ?? "turn"} · #{turn.index ?? i}</div>
-              <pre className="turn-text">{JSON.stringify(turn, null, 2)}</pre>
+      <div className="session-scroll">
+        {result?.summary ? (
+          <article className="turn turn-verdict">
+            <div className="turn-role">
+              Justificación de la nota · evaluación por juez AI
+              {result.confidence ? <span className="turn-cost" style={{ marginLeft: "8px" }}>· Confianza: {result.confidence}</span> : null}
+            </div>
+            <div className="turn-text markdown-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(result.summary) }} />
+          </article>
+        ) : null}
+        <div className="turn-list">
+          {visibleTurns.map((turn, i) => {
+            if (turn.role === "user") {
+              return <UserTurn key={`${turn.index ?? i}-user`} turn={turn} />;
+            }
+            if (turn.role === "assistant") {
+              return <AssistantTurn key={`${turn.index ?? i}-assistant`} turn={turn} toolResultMap={toolResultMap} />;
+            }
+            return (
+              <article className="turn" key={`${turn.index ?? i}-${turn.role ?? "turn"}`}>
+                <div className="turn-role">{turn.role ?? "turn"} · #{turn.index ?? i}</div>
+                <pre className="turn-text">{JSON.stringify(turn, null, 2)}</pre>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function EvidenceList({ evidence }: { readonly evidence: readonly VerdictEvidence[] }) {
+  if (evidence.length === 0) return null;
+  return (
+    <ul className="verdict-evidence-list">
+      {evidence.map((item, index) => (
+        <li key={`${item.path}-${item.lines ?? "all"}-${index}`}>
+          <span className="verdict-evidence-path">
+            {item.path}{item.lines ? `:${item.lines}` : ""}
+          </span>
+          <span>{item.description}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function VerdictDetailView({ detail }: { readonly detail: VerdictDetail }) {
+  const triggeredAdjustments = detail.gradeAdjustments.filter((adjustment) => adjustment.triggered);
+  return (
+    <div className="verdict-detail">
+      {detail.criticalErrors.length > 0 ? (
+        <section className="verdict-section verdict-alert">
+          <h4>Errores críticos</h4>
+          <ul>
+            {detail.criticalErrors.map((error, index) => <li key={index}>{error}</li>)}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="verdict-section">
+        <h4>Criterios</h4>
+        <div className="verdict-criteria">
+          {detail.criteria.map((criterion) => (
+            <article className="verdict-criterion" key={criterion.criterionId}>
+              <div className="verdict-criterion-head">
+                <div>
+                  <strong>{criterion.criterionId} · {criterion.title}</strong>
+                  <span>{Math.round(criterion.weight * 100)}% del puntaje</span>
+                </div>
+                <b>{criterion.awardedPoints}/{criterion.maximumPoints}</b>
+              </div>
+              <p>{criterion.justification}</p>
+              <EvidenceList evidence={criterion.evidence} />
+              {criterion.deductions.length > 0 ? (
+                <div className="verdict-deductions">
+                  {criterion.deductions.map((deduction) => (
+                    <details key={deduction.id}>
+                      <summary>
+                        Descuento {deduction.points}: {deduction.reason}
+                      </summary>
+                      <p>Root cause: {deduction.rootCauseId} · origen: {deduction.origin}</p>
+                      <EvidenceList evidence={deduction.evidence} />
+                    </details>
+                  ))}
+                </div>
+              ) : null}
             </article>
-          );
-        })}
+          ))}
+        </div>
+      </section>
+
+      {triggeredAdjustments.length > 0 ? (
+        <section className="verdict-section">
+          <h4>Ajustes de nota aplicados</h4>
+          {triggeredAdjustments.map((adjustment) => (
+            <article className="verdict-criterion" key={adjustment.ruleId}>
+              <div className="verdict-criterion-head">
+                <strong>{adjustment.ruleId}</strong>
+                <b>{adjustment.operation} {adjustment.value}</b>
+              </div>
+              <p>{adjustment.justification}</p>
+              <EvidenceList evidence={adjustment.evidence} />
+            </article>
+          ))}
+        </section>
+      ) : null}
+
+      {detail.inheritedObservations.length > 0 ? (
+        <section className="verdict-section">
+          <h4>Observaciones heredadas</h4>
+          {detail.inheritedObservations.map((observation) => (
+            <article className="verdict-criterion" key={observation.id}>
+              <strong>{observation.id}</strong>
+              <p>{observation.description}</p>
+              <p>{observation.effectOnCurrentAssignment}</p>
+              <EvidenceList evidence={observation.evidence} />
+            </article>
+          ))}
+        </section>
+      ) : null}
+
+      {detail.commands.length > 0 ? (
+        <section className="verdict-section">
+          <h4>Comandos del juez</h4>
+          <div className="verdict-command-list">
+            {detail.commands.map((command, index) => (
+              <details key={`${command.command}-${index}`}>
+                <summary>{command.summary} {command.exitCode === null ? "" : `(exit ${command.exitCode})`}</summary>
+                <pre>{command.command}</pre>
+              </details>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {detail.humanReviewItems.length > 0 ? (
+        <section className="verdict-section">
+          <h4>Para revisión humana</h4>
+          <ul>
+            {detail.humanReviewItems.map((item, index) => <li key={index}>{item}</li>)}
+          </ul>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function SessionJudgeView({ session, result }: {
+  readonly session: SessionData;
+  readonly result?: Result;
+}) {
+  return (
+    <>
+      <SessionHeader session={session} result={result} />
+      <div className="session-scroll">
+        {result?.summary ? (
+          <article className="turn turn-verdict-full">
+            <div className="turn-role">
+              Evaluación detallada del Juez AI ({result.solverId})
+              {result.confidence ? <span className="turn-cost" style={{ marginLeft: "8px" }}>· Confianza: {result.confidence}</span> : null}
+            </div>
+            <div className="turn-text markdown-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(result.summary) }} />
+            {result.verdictDetail ? <VerdictDetailView detail={result.verdictDetail} /> : null}
+          </article>
+        ) : (
+          <div className="empty">Esta sesión no cuenta con una justificación del juez detallada.</div>
+        )}
       </div>
     </>
   );
 }
 
 function SessionsView({ manifest }: { readonly manifest: Manifest }) {
+  const courses = useMemo(() => {
+    const set = new Set(manifest.targets.map((t) => t.course));
+    return Array.from(set).sort();
+  }, [manifest.targets]);
+
+  const [selectedCourse, setSelectedCourse] = useState<string>(() => {
+    const hasCC3001 = manifest.targets.some((t) => t.course === "CC3001");
+    return hasCC3001 ? "CC3001" : (manifest.targets[0]?.course ?? "");
+  });
+
   const [solverId, setSolverId] = useState<string>(manifest.solvers[0]?.id ?? "");
-  const sessions = useMemo(
-    () => manifest.results.filter((result) => result.solverId === solverId && result.sessionPath !== null),
-    [manifest.results, solverId],
-  );
-  const [selectedPath, setSelectedPath] = useState<string | null>(sessions[0]?.sessionPath ?? null);
+  const [viewMode, setViewMode] = useState<"agente" | "juez">("agente");
+
+  const sessions = useMemo(() => {
+    return manifest.results.filter((result) =>
+      result.solverId === solverId &&
+      result.sessionPath !== null &&
+      result.taskId.startsWith(selectedCourse)
+    );
+  }, [manifest.results, solverId, selectedCourse]);
+
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+
+  const currentSessionsJson = JSON.stringify(sessions.map((s) => s.sessionPath));
+  useMemo(() => {
+    if (sessions.length > 0) {
+      const stillExists = sessions.some((s) => s.sessionPath === selectedPath);
+      if (!stillExists) {
+        setSelectedPath(sessions[0].sessionPath);
+      }
+    } else {
+      setSelectedPath(null);
+    }
+  }, [currentSessionsJson]);
+
   const selected = sessions.find((session) => session.sessionPath === selectedPath) ?? sessions[0];
+  const queryClient = useQueryClient();
+
+  const prefetchSession = (sessionPath: string | null) => {
+    if (!sessionPath) return;
+    queryClient.prefetchQuery({
+      queryKey: ["session", sessionPath],
+      queryFn: () => fetchJson<SessionData>(sessionPath),
+      staleTime: 5 * 60 * 1000,
+    });
+  };
+
   const sessionQuery = useQuery({
     queryKey: ["session", selected?.sessionPath],
     queryFn: () => fetchJson<SessionData>(selected?.sessionPath ?? ""),
@@ -644,34 +913,65 @@ function SessionsView({ manifest }: { readonly manifest: Manifest }) {
   });
 
   return (
-    <section className="section">
-      <div className="section-header">
-        <div className="section-title">
-          <h3>Sesiones solver</h3>
-          <span>Las sesiones se cargan bajo demanda desde JSON estático.</span>
+    <section className="section section-sessions">
+      <div className="sessions-toolbar">
+        <div className="sessions-toolbar-title">
+          <strong>Sesiones</strong>
+          <span>{COURSE_NAMES[selectedCourse] ?? selectedCourse}</span>
         </div>
-      </div>
-      <div className="toolbar">
-        <div className="model-buttons">
-          {manifest.solvers.map((solver) => (
-            <button
-              key={solver.id}
-              className={solverId === solver.id ? "model-button active" : "model-button"}
-              type="button"
-              onClick={() => {
-                setSolverId(solver.id);
-                const next = manifest.results.find((result) => result.solverId === solver.id && result.sessionPath !== null);
-                setSelectedPath(next?.sessionPath ?? null);
-              }}
+        <div className="toolbar-filters">
+          <div className="filter-group">
+            <label htmlFor="course-select">Curso:</label>
+            <select
+              id="course-select"
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+              className="toolbar-select"
             >
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                {solver.logo && <img src={solver.logo} className="model-logo" alt="" style={{ width: "14px", height: "14px" }} loading="lazy" />}
-                <span>{solver.shortLabel}</span>
-              </span>
-            </button>
-          ))}
+              {courses.map((course) => (
+                <option key={course} value={course}>
+                  {course}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <div className="view-mode-buttons">
+              <button
+                className={viewMode === "agente" ? "view-mode-button active" : "view-mode-button"}
+                type="button"
+                onClick={() => setViewMode("agente")}
+              >
+                Agente
+              </button>
+              <button
+                className={viewMode === "juez" ? "view-mode-button active" : "view-mode-button"}
+                type="button"
+                onClick={() => setViewMode("juez")}
+              >
+                Juez
+              </button>
+            </div>
+          </div>
+
+          <div className="model-buttons">
+            {manifest.solvers.map((solver) => (
+              <button
+                key={solver.id}
+                className={solverId === solver.id ? "model-button active" : "model-button"}
+                type="button"
+                onClick={() => setSolverId(solver.id)}
+              >
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                  {solver.logo && <img src={solver.logo} className="model-logo" alt="" style={{ width: "14px", height: "14px" }} loading="lazy" />}
+                  <span>{solver.shortLabel}</span>
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-        <span className="muted">{sessions.length} sesiones</span>
+        <span className="sessions-count">{sessions.length} sesiones</span>
       </div>
       <div className="session-layout">
         <div className="session-list">
@@ -681,6 +981,8 @@ function SessionsView({ manifest }: { readonly manifest: Manifest }) {
               className={selected?.sessionPath === session.sessionPath ? "session-card active" : "session-card"}
               type="button"
               onClick={() => setSelectedPath(session.sessionPath)}
+              onMouseEnter={() => prefetchSession(session.sessionPath)}
+              onFocus={() => prefetchSession(session.sessionPath)}
             >
               <div className="session-card-top">
                 <strong>
@@ -702,12 +1004,18 @@ function SessionsView({ manifest }: { readonly manifest: Manifest }) {
               </span>
             </button>
           ))}
+          {sessions.length === 0 ? <div className="empty">No hay sesiones para este filtro.</div> : null}
         </div>
         <div className="session-viewer">
-          {sessionQuery.isLoading ? <div className="empty">Cargando sesión...</div> : null}
-          {sessionQuery.isError ? <div className="empty">No se pudo cargar la sesión.</div> : null}
-          {sessionQuery.data !== undefined ? (
-            <SessionConversation session={sessionQuery.data} result={selected} />
+          {selectedPath === null ? <div className="empty">Selecciona una sesión de la lista para comenzar.</div> : null}
+          {selectedPath !== null && sessionQuery.isLoading ? <div className="empty">Cargando sesión...</div> : null}
+          {selectedPath !== null && sessionQuery.isError ? <div className="empty">No se pudo cargar la sesión.</div> : null}
+          {selectedPath !== null && sessionQuery.data !== undefined ? (
+            viewMode === "agente" ? (
+              <SessionConversation session={sessionQuery.data} result={selected} />
+            ) : (
+              <SessionJudgeView session={sessionQuery.data} result={selected} />
+            )
           ) : null}
         </div>
       </div>
@@ -719,7 +1027,7 @@ function AppContent() {
   const [view, setView] = useState<MainView>("resultados");
   const manifestQuery = useQuery({
     queryKey: ["manifest"],
-    queryFn: () => fetchJson<Manifest>("data/manifest.json"),
+    queryFn: () => fetchJson<Manifest>("/data/manifest.json"),
   });
 
   if (manifestQuery.isLoading) {
@@ -727,14 +1035,34 @@ function AppContent() {
   }
 
   if (manifestQuery.isError || manifestQuery.data === undefined) {
-    return <main className="page"><div className="empty">No se pudo cargar el manifest.</div></main>;
+    return (
+      <main className="page">
+        <div className="empty" style={{ textAlign: "center", padding: "40px 20px" }}>
+          <p style={{ margin: "0 0 12px", color: "#f87171" }}>No se pudo cargar el manifest de datos.</p>
+          <button
+            type="button"
+            onClick={() => void manifestQuery.refetch()}
+            style={{
+              padding: "8px 16px",
+              background: "#151515",
+              border: "1px solid #2c2c2c",
+              color: "#d7d7d7",
+              cursor: "pointer",
+              fontSize: "13px"
+            }}
+          >
+            Reintentar carga
+          </button>
+        </div>
+      </main>
+    );
   }
 
   const manifest = manifestQuery.data;
   const reviewed = manifest.summaries.reduce((sum, summary) => sum + summary.judgedRuns, 0);
 
   return (
-    <main className="page">
+    <main className={view === "sesiones" ? "page page-sessions" : "page"}>
       <header className="topbar">
         <div className="brand">
           <img src="/logos/logo.svg" alt="UCH Logo" className="brand-logo" loading="eager" />
@@ -752,49 +1080,33 @@ function AppContent() {
         </nav>
       </header>
 
-      <section className="hero">
-        <div className="hero-copy">
-          <h2>Agentes de IA contra tareas del DCC.</h2>
-          <p>Minimax M3, Deepseek V4 Flash y GPT 5.4 Mini contra tareas de código de la carrera de Ingenieria Civil en Computación</p>
-        </div>
-        <div className="stats">
-          <div className="stat"><strong>{manifest.targets.length}</strong><span>tareas</span></div>
-          <div className="stat"><strong>{manifest.solvers.length}</strong><span>modelos</span></div>
-          <div className="stat"><strong>{new Set(manifest.targets.map((target) => target.course)).size}</strong><span>cursos</span></div>
-          <div className="stat"><strong>{reviewed}</strong><span>reviews</span></div>
-        </div>
-      </section>
+      {view === "resultados" ? (
+        <section className="hero">
+          <div className="hero-copy">
+            <h2>Agentes de IA contra tareas del DCC.</h2>
+            <p>Minimax M3, Deepseek V4 Flash y GPT 5.4 Mini contra tareas de código de la carrera de Ingenieria Civil en Computación</p>
+          </div>
+          <div className="stats">
+            <div className="stat"><strong>{manifest.targets.length}</strong><span>tareas</span></div>
+            <div className="stat"><strong>{manifest.solvers.length}</strong><span>modelos</span></div>
+            <div className="stat"><strong>{new Set(manifest.targets.map((target) => target.course)).size}</strong><span>cursos</span></div>
+            <div className="stat"><strong>{reviewed}</strong><span>reviews</span></div>
+          </div>
+        </section>
+      ) : null}
 
       {view === "resultados" ? <ResultsView manifest={manifest} /> : <SessionsView manifest={manifest} />}
 
-      <footer className="footer">
-        <p style={{ margin: "0 0 6px" }}>Datos generados desde runs locales. Las runs pesan cerca de 20gb por lo que es díficil publicarlas.</p>
-        <p style={{ margin: "0 0 12px", display: "flex", alignItems: "center", gap: "6px" }}>
-          <a
-            href={manifest.project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              color: "#d7d7d7",
-              textDecoration: "none",
-              border: "1px solid #2c2c2c",
-              background: "#101010",
-              height: "28px",
-              padding: "0 10px",
-              fontSize: "11px",
-            }}
-          >
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
-              <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-            </svg>
-            <span>Código en GitHub</span>
-          </a>
-        </p>
-        <p style={{ margin: 0, opacity: 0.85 }}>{manifest.project.disclaimer}</p>
-      </footer>
+      {view === "resultados" ? <footer className="footer">
+        <p>Datos generados desde runs locales. Las runs pesan cerca de 20gb por lo que es díficil publicarlas.</p>
+        <p>{manifest.project.disclaimer}</p>
+        <a className="footer-github" href={manifest.project.githubUrl} target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+          <span>Código en GitHub</span>
+        </a>
+      </footer> : null}
     </main>
   );
 }

@@ -12,6 +12,7 @@ import os from "node:os"
 import path from "node:path"
 import { Effect, Layer, Schema } from "effect"
 import {
+  getExperimentStatus,
   getProgress,
   inspectRun,
   listBenchmarkTargets,
@@ -438,6 +439,72 @@ describe("Benchmark application operations", () => {
         completed: ["CC3501"],
         current: null,
       })
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  test("experiment status orders runs by course identifier and then task key", async () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "operations-"))
+    try {
+      const harness = makeLayer(root)
+      const runsRoot = path.join(root, "runs")
+      const runFixtures = [
+        {
+          runId: "run-t02",
+          taskId: "CC4302/t02",
+          startedAt: "2026-07-05T00:00:00.000Z",
+        },
+        {
+          runId: "run-t01-b",
+          taskId: "CC4302/t01",
+          startedAt: "2026-07-05T00:01:00.000Z",
+        },
+        {
+          runId: "run-t01-a",
+          taskId: "CC3301/t01",
+          startedAt: "2026-07-05T00:02:00.000Z",
+        },
+      ]
+
+      for (const fixture of runFixtures) {
+        const runDir = path.join(runsRoot, ...fixture.taskId.split("/"), fixture.runId)
+        const paths = {
+          input: path.join(runDir, "00-input"),
+          workspace: path.join(runDir, "01-workspace"),
+          agentHome: path.join(runDir, "02-agent-home"),
+          agentConfig: path.join(runDir, "03-agent-config"),
+          output: path.join(runDir, "04-output"),
+          evidence: path.join(runDir, "05-evidence"),
+          review: path.join(runDir, "06-review"),
+          session: path.join(runDir, "07-session"),
+        }
+        for (const directory of Object.values(paths)) {
+          mkdirSync(directory, { recursive: true })
+        }
+        writeFileSync(path.join(runDir, "run.json"), JSON.stringify({
+          ...makeRun(fixture.runId, fixture.taskId, "agent", paths),
+          status: "completed",
+          startedAt: fixture.startedAt,
+          finishedAt: fixture.startedAt,
+          agent: { adapter: "pi", model: "test-model", command: null },
+        }))
+      }
+
+      const status = await Effect.runPromise(
+        getExperimentStatus("agent", {}, runsRoot).pipe(
+          Effect.provide(harness.layer),
+        ),
+      )
+
+      assert.deepEqual(
+        status.runs.map((item) => [item.taskId, item.runId]),
+        [
+          ["CC3301/t01", "run-t01-a"],
+          ["CC4302/t01", "run-t01-b"],
+          ["CC4302/t02", "run-t02"],
+        ],
+      )
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

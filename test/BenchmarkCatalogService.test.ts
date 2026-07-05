@@ -168,6 +168,22 @@ describe("BenchmarkCatalogService", () => {
     )
   })
 
+  test("orders benchmark targets by course identifier and then task key", async () => {
+    const tasksRoot = makeTemporaryTasksRoot()
+    createTask(path.join(tasksRoot, "standalone", "CC3001", "t02"), "Second task")
+    createTask(path.join(tasksRoot, "standalone", "CC4001", "t01"), "First task")
+
+    const sequenceDirectory = path.join(tasksRoot, "cumulative", "CC3501")
+    createTask(path.join(sequenceDirectory, "t01"), "Sequence first stage")
+
+    const targets = await Effect.runPromise(listTargets(tasksRoot))
+
+    assert.deepEqual(
+      targets.map((target) => target.id),
+      ["CC3001/t02", "CC3501", "CC4001/t01"],
+    )
+  })
+
   test("rejects task content directories outside the tasks root", async () => {
     const tasksRoot = makeTemporaryTasksRoot()
     const taskDirectory = path.join(tasksRoot, "standalone", "unsafe")
