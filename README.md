@@ -6,13 +6,13 @@ La regla central es simple: el solver ve `public/` y nada más. `original/`, `gr
 
 ## Resultados Actuales
 
-Snapshot local generado desde `runs/` el 2026-07-04. Las notas son del AI Judge `pi-openai-gpt-5.5-medium-subscription`; el costo de DeepSeek V4 Flash se normaliza usando precios publicos en vez del costo gratis reportado por el provider.
+Snapshot local generado desde `runs/` el 2026-07-05. Las notas son del AI Judge `pi-openai-gpt-5.5-medium-subscription`; el costo de DeepSeek V4 Flash se normaliza usando precios publicos en vez del costo gratis reportado por el provider.
 
-| Solver | Runs completas | Reviews GPT-5.5 medium | Nota media | >= 6.0 | 7.0 | Costo | Tokens | Nota |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| MiniMax M3 (high-reasoning) | 28/28 | 28/28 | 6.86 | 27/28 | 19/28 | $18.91 | 124,154,717 | corrida completa |
-| DeepSeek V4 Flash (max-reasoning) | 28/28 | 28/28 | 6.66 | 26/28 | 11/28 | $0.34 | 37,481,675 | corrida completa |
-| GPT 5.4 mini (medium-reasoning) | 28/28 | 28/28 | 6.71 | 26/28 | 17/28 | $3.58 | 13,969,621 | corrida completa |
+| Solver | Runs completas | Reviews GPT-5.5 medium | Nota media | Mediana | >= 6.0 | 7.0 | Costo observado | Tokens | Nota |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| MiniMax M3 (high-reasoning) | 28/28 | 28/28 | 6.91 | 7.0 | 28/28 | 21/28 | $19.80 | 128,061,137 | corrida completa |
+| DeepSeek V4 Flash (max-reasoning) | 28/28 | 28/28 | 6.61 | 6.8 | 25/28 | 11/28 | $0.42 | 48,339,553 | corrida completa |
+| GPT 5.4 mini (medium-reasoning) | 28/28 | 28/28 | 6.28 | 7.0 | 24/28 | 15/28 | $3.55 | 13,747,426 | corrida completa |
 
 Para regenerar este resumen en terminal:
 
@@ -26,25 +26,11 @@ Para ver una tabla corta de notas por target en terminal:
 bun run grades
 ```
 
-## Web Publicable
+## Posibles Mejoras
 
-El sitio estatico vive en `web/` y se llama UChile Bench. Muestra leaderboard, notas por target, costos, metricas de tokens y sesiones compactas del solver.
+Primero, por la cantidad limitada de recursos solo se hizo una run por modelo, hay outliers claros como los dos 1.0 que sacó GPT 5.4 mini en CC3501 porque no quizo ejecutar el código y ver que tenía un error de sintaxis, por alguna razón. Otra limitación es la cantidad de modelos y cantidad de tareas probadas. 
 
-```bash
-bun run web:data
-bun run web:dev
-bun run web:build
-bun run web:preview
-```
-
-Para Cloudflare Pages:
-
-```text
-Build command: bun run web:build
-Build output directory: web/dist
-```
-
-Notas para el siguiente agente de diseno: [`web/STYLE_HANDOFF.md`](web/STYLE_HANDOFF.md).
+Eres libre de abrir un PR y aportar con código o inferencia.
 
 ## Qué Hay Aquí
 

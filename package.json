@@ -1,6 +1,7 @@
 {
   "name": "ai-task-bench",
   "version": "0.1.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "bench": "bun run src/cli/main.ts",
