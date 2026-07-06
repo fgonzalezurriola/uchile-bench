@@ -215,7 +215,7 @@ const fmtNumber = (value: number | null | undefined, digits: number): string =>
   value === null || value === undefined ? "-" : value.toFixed(digits);
 
 const fmtUsd = (value: number | null | undefined): string =>
-  value === null || value === undefined ? "-" : `$${value.toFixed(2)}`;
+  value === null || value === undefined ? "-" : `$${value.toFixed(3)}`;
 
 const fmtCompact = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return "-";

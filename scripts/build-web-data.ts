@@ -60,6 +60,13 @@ type RunMetrics = {
   readonly totalTurns: number;
 };
 
+type UsageRecord = {
+  readonly inputTokens?: unknown;
+  readonly outputTokens?: unknown;
+  readonly cacheReadTokens?: unknown;
+  readonly costUsd?: unknown;
+};
+
 type RunRecord = {
   readonly taskId: string;
   readonly course: string;
@@ -533,9 +540,48 @@ const latestVerdict = (run: RunRecord): VerdictRecord | null => {
 const sessionFileName = (run: RunRecord): string =>
   `${run.taskId.replaceAll("/", "__")}__${run.agentId}__${run.runId}.json`;
 
-const sanitizeSessionJson = (sourcePath: string, destinationPath: string): number => {
+const estimateDeepSeekUsageCost = (usage: UsageRecord): number => {
+  const inputTokens = typeof usage.inputTokens === "number" && Number.isFinite(usage.inputTokens)
+    ? usage.inputTokens
+    : 0;
+  const outputTokens = typeof usage.outputTokens === "number" && Number.isFinite(usage.outputTokens)
+    ? usage.outputTokens
+    : 0;
+  const cacheReadTokens = typeof usage.cacheReadTokens === "number" && Number.isFinite(usage.cacheReadTokens)
+    ? usage.cacheReadTokens
+    : 0;
+  const cacheMissInputTokens = Math.max(0, inputTokens - cacheReadTokens);
+  return (
+    (cacheMissInputTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheMiss) +
+    (cacheReadTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheHit) +
+    (outputTokens * DEEPSEEK_API_PRICING_PER_MILLION.output)
+  ) / 1_000_000;
+};
+
+const applyPublishedSessionCost = (run: RunRecord, session: unknown): unknown => {
+  if (run.agentId !== "pi-zen-deepseek-v4-flash-free-xhigh" || !isRecord(session)) {
+    return session;
+  }
+
+  const turns = Array.isArray(session.turns) ? session.turns : [];
+  for (const turn of turns) {
+    if (!isRecord(turn) || !isRecord(turn.usage)) {
+      continue;
+    }
+    turn.usage.costUsd = estimateDeepSeekUsageCost(turn.usage);
+  }
+
+  if (isRecord(session.metrics) && isRecord(session.metrics.usage)) {
+    session.metrics.usage.costUsd = estimateApiCost(run);
+  }
+
+  return session;
+};
+
+const sanitizeSessionJson = (run: RunRecord, sourcePath: string, destinationPath: string): number => {
   const homeDir = process.env.HOME;
-  let content = readFileSync(sourcePath, "utf8").replaceAll(ROOT, "<repo>");
+  const session = applyPublishedSessionCost(run, readJson(sourcePath));
+  let content = `${JSON.stringify(session, null, 2)}\n`.replaceAll(ROOT, "<repo>");
   if (homeDir !== undefined) {
     content = content.replaceAll(homeDir, "<home>");
   }
@@ -590,7 +636,7 @@ const buildResult = (
   const sessionDestinationPath = join(SESSION_DIR, sessionName);
   let sessionBytes: number | null = null;
   try {
-    sessionBytes = sanitizeSessionJson(sessionSourcePath, sessionDestinationPath);
+    sessionBytes = sanitizeSessionJson(run, sessionSourcePath, sessionDestinationPath);
   } catch {
     sessionBytes = null;
   }
