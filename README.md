@@ -8,25 +8,15 @@ La regla central es simple: el solver ve `public/` y nada más. `original/`, `gr
 
 ## Resultados Actuales
 
-Snapshot local generado desde `runs/` el 2026-07-05. Las notas son del AI Judge `pi-openai-gpt-5.5-medium-subscription`; el costo de DeepSeek V4 Flash se normaliza usando precios publicos en vez del costo gratis reportado por el provider.
+Snapshot local generado desde `runs/` el 2026-07-05. Las notas son del AI Judge `gpt-5.5-medium`; el costo de DeepSeek V4 Flash se calcula a partir del precio público pues por opencode es gratis.
 
-| Solver | Runs completas | Reviews GPT-5.5 medium | Nota media | Mediana | >= 6.0 | 7.0 | Costo observado | Tokens | Nota |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| MiniMax M3 (high-reasoning) | 28/28 | 28/28 | 6.91 | 7.0 | 28/28 | 21/28 | $19.80 | 128,061,137 | corrida completa |
-| DeepSeek V4 Flash (max-reasoning) | 28/28 | 28/28 | 6.61 | 6.8 | 25/28 | 11/28 | $0.42 | 48,339,553 | corrida completa |
-| GPT 5.4 mini (medium-reasoning) | 28/28 | 28/28 | 6.28 | 7.0 | 24/28 | 15/28 | $3.55 | 13,747,426 | corrida completa |
+| Solver | Runs completas | Reviews GPT-5.5 medium | Nota media | Mediana | >= 6.0 | 7.0 | Costo observado | Tokens |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| MiniMax M3 (high-reasoning) | 28/28 | 28/28 | 6.91 | 7.0 | 28/28 | 21/28 | $19.80 | 128,061,137 | 
+| DeepSeek V4 Flash (max-reasoning) | 28/28 | 28/28 | 6.61 | 6.8 | 25/28 | 11/28 | $0.42 | 48,339,553 | 
+| GPT 5.4 mini (medium-reasoning) | 28/28 | 28/28 | 6.28 | 7.0 | 24/28 | 15/28 | $3.55 | 13,747,426 | 
 
-Para regenerar este resumen en terminal:
 
-```bash
-bun run results
-```
-
-Para ver una tabla corta de notas por target en terminal:
-
-```bash
-bun run grades
-```
 
 ## Posibles Mejoras
 
@@ -474,14 +464,28 @@ bun run bench experiment status minimax --prefix CC3001
 
 ### Comandos Reportables Actuales
 
-Los resultados comparables actuales usan una repetición por Benchmark Target y `pi-openai-gpt-5.5-medium-subscription` como AI Judge. Estos comandos son intencionalmente explícitos aunque repitan el patrón anterior.
+Para regenerar un resumen en terminal:
 
 ```bash
-bun run bench experiment run minimax --runs 1 --concurrency 1 --reset
+bun run results
+```
+
+Para ver una tabla corta de notas por target en terminal:
+
+```bash
+bun run grades
+```
+
+Los resultados comparables actuales usan una repetición por Benchmark Target y `gpt-5.5-medium` mediante suscripción como AI Judge. Estos comandos son intencionalmente explícitos aunque repitan el patrón anterior. Por default hay un timeout de 120 minutos.
+
+Para rehacer el benchmark puedes usar la flag --reset o mover los resultados de runs/ (gitignored) a otra carpeta. Se recomienda concurrency 1 pues algunas tareas son pesadas en el lado de CPU y pueden alterar el pensamiento del LLM a reintentar indefinidamente los tests de CC3001-CC4301 para lograr la nota máxima.
+
+```bash
+bun run bench experiment run minimax --runs 1 --concurrency 1
 ```
 
 ```bash
-bun run bench experiment judge minimax --judge pi-openai-gpt-5.5-medium-subscription --concurrency 1 --force
+bun run bench experiment judge minimax --judge pi-openai-gpt-5.5-medium-subscription --concurrency 1
 ```
 
 ```bash
@@ -489,11 +493,11 @@ bun run bench experiment status minimax
 ```
 
 ```bash
-bun run bench experiment run deepseek --runs 1 --concurrency 1 --reset
+bun run bench experiment run deepseek --runs 1 --concurrency 1
 ```
 
 ```bash
-bun run bench experiment judge deepseek --judge pi-openai-gpt-5.5-medium-subscription --concurrency 1 --force
+bun run bench experiment judge deepseek --judge pi-openai-gpt-5.5-medium-subscription --concurrency 1
 ```
 
 ```bash
@@ -501,11 +505,11 @@ bun run bench experiment status deepseek
 ```
 
 ```bash
-bun run bench experiment run gpt-5.4-mini-medium --runs 1 --concurrency 1 --reset
+bun run bench experiment run gpt-5.4-mini-medium --runs 1 --concurrency 1
 ```
 
 ```bash
-bun run bench experiment judge gpt-5.4-mini-medium --judge pi-openai-gpt-5.5-medium-subscription --concurrency 1 --force
+bun run bench experiment judge gpt-5.4-mini-medium --judge pi-openai-gpt-5.5-medium-subscription --concurrency 1
 ```
 
 ```bash
