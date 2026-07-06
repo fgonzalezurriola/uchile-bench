@@ -1,5 +1,7 @@
 # AI Task Bench
 
+[Página Web](https://uchile-bench.pages.dev/)
+
 Este repositorio pone a prueba que tantas tareas del DCC Uchile puede un agente de IA, y versiones más ligeras, pueden realizar. Minimax M3, Deepseek V4 Flash y GPT 5.4 mini son puestos a prueba para luego ser evaluados por GPT 5.5 medium.
 
 La regla central es simple: el solver ve `public/` y nada más. `original/`, `grading/`, ejecuciones anteriores, credenciales y configuración del host no son parte del mundo del solver.
