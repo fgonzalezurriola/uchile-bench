@@ -4,16 +4,27 @@ import { join, relative } from "node:path";
 const ROOT = process.cwd();
 const JUDGE_ID = "pi-openai-gpt-5.5-medium-subscription";
 
+const DEEPSEEK_API_PRICING_PER_MILLION = {
+  inputCacheMiss: 0.14,
+  inputCacheHit: 0.0028,
+  output: 0.28,
+};
+
 const SOLVERS = [
   {
     id: "pi-minimax-m3-high-api",
-    label: "MiniMax M3 high",
+    label: "MiniMax M3 (high-reasoning)",
     note: "corrida completa",
   },
   {
     id: "pi-zen-deepseek-v4-flash-free-xhigh",
-    label: "DeepSeek V4 flash free xhigh",
-    note: "muestra parcial por rate limits",
+    label: "DeepSeek V4 Flash (max-reasoning)",
+    note: "corrida completa",
+  },
+  {
+    id: "pi-openai-gpt-5.4-mini-medium-subscription",
+    label: "GPT 5.4 mini (medium-reasoning)",
+    note: "corrida completa",
   },
 ] as const;
 
@@ -23,6 +34,7 @@ type RunMetrics = {
   readonly totalTokens: number;
   readonly inputTokens: number;
   readonly outputTokens: number;
+  readonly cacheReadTokens: number;
   readonly costUsd: number;
 };
 
@@ -143,6 +155,28 @@ function discoverTargets(): readonly TargetRow[] {
   return rows.sort((a, b) => a.taskId.localeCompare(b.taskId));
 }
 
+function readSessionMetrics(runDir: string): Partial<RunMetrics & { readonly durationSeconds: number }> {
+  const metricsPath = join(runDir, "07-session", "metrics.json");
+  try {
+    const raw = readJson(metricsPath);
+    if (!isRecord(raw)) {
+      return {};
+    }
+
+    const usage = isRecord(raw.usage) ? raw.usage : {};
+    return {
+      totalTokens: optionalNumber(usage, "totalTokens"),
+      inputTokens: optionalNumber(usage, "inputTokens"),
+      outputTokens: optionalNumber(usage, "outputTokens"),
+      cacheReadTokens: optionalNumber(usage, "cacheReadTokens"),
+      costUsd: optionalNumber(usage, "costUsd"),
+      durationSeconds: optionalNumber(raw, "durationSeconds"),
+    };
+  } catch {
+    return {};
+  }
+}
+
 function parseRun(path: string): RunRecord | null {
   const raw = readJson(path);
   if (!isRecord(raw)) {
@@ -152,6 +186,8 @@ function parseRun(path: string): RunRecord | null {
   const metricsRaw = raw.metrics;
   const metricsRecord = isRecord(metricsRaw) ? metricsRaw : {};
   const taskId = requireString(raw, "taskId");
+  const runDir = path.slice(0, -"run.json".length - 1);
+  const sessionMetrics = readSessionMetrics(runDir);
 
   return {
     taskId,
@@ -160,13 +196,14 @@ function parseRun(path: string): RunRecord | null {
     agentId: requireString(raw, "agentId"),
     status: requireString(raw, "status"),
     finishedAt: typeof raw.finishedAt === "string" ? raw.finishedAt : "",
-    durationSeconds: optionalNumber(raw, "durationSeconds"),
-    runDir: path.slice(0, -"run.json".length - 1),
+    durationSeconds: sessionMetrics.durationSeconds ?? optionalNumber(raw, "durationSeconds"),
+    runDir,
     metrics: {
-      totalTokens: optionalNumber(metricsRecord, "totalTokens"),
-      inputTokens: optionalNumber(metricsRecord, "inputTokens"),
-      outputTokens: optionalNumber(metricsRecord, "outputTokens"),
-      costUsd: optionalNumber(metricsRecord, "costUsd"),
+      totalTokens: sessionMetrics.totalTokens ?? optionalNumber(metricsRecord, "totalTokens"),
+      inputTokens: sessionMetrics.inputTokens ?? optionalNumber(metricsRecord, "inputTokens"),
+      outputTokens: sessionMetrics.outputTokens ?? optionalNumber(metricsRecord, "outputTokens"),
+      cacheReadTokens: sessionMetrics.cacheReadTokens ?? 0,
+      costUsd: sessionMetrics.costUsd ?? optionalNumber(metricsRecord, "costUsd"),
     },
   };
 }
@@ -264,6 +301,22 @@ function fmtInt(value: number): string {
   return Math.round(value).toLocaleString("en-US");
 }
 
+function estimateApiCost(run: RunRecord): number {
+  if (run.agentId !== "pi-zen-deepseek-v4-flash-free-xhigh") {
+    return run.metrics.costUsd;
+  }
+
+  const cacheMissInputTokens = Math.max(
+    0,
+    run.metrics.inputTokens - run.metrics.cacheReadTokens,
+  );
+  return (
+    (cacheMissInputTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheMiss) +
+    (run.metrics.cacheReadTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheHit) +
+    (run.metrics.outputTokens * DEEPSEEK_API_PRICING_PER_MILLION.output)
+  ) / 1_000_000;
+}
+
 function summarizeSolver(
   solver: (typeof SOLVERS)[number],
   results: readonly SolverTaskResult[],
@@ -282,7 +335,10 @@ function summarizeSolver(
     medianGrade: median(grades),
     atLeastSix: grades.length === 0 ? null : grades.filter((grade) => grade >= 6).length,
     perfect: grades.length === 0 ? null : grades.filter((grade) => grade === 7).length,
-    totalCostUsd: completed.reduce((sum, result) => sum + (result.run?.metrics.costUsd ?? 0), 0),
+    totalCostUsd: completed.reduce(
+      (sum, result) => sum + (result.run === null ? 0 : estimateApiCost(result.run)),
+      0,
+    ),
     totalTokens: completed.reduce((sum, result) => sum + (result.run?.metrics.totalTokens ?? 0), 0),
     totalDurationSeconds: completed.reduce((sum, result) => sum + (result.run?.durationSeconds ?? 0), 0),
     note: solver.note,
