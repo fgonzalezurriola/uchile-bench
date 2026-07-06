@@ -308,6 +308,7 @@ function SessionHeader({ session, result }: {
       <div className="session-header-title">
         <h3>
           {formatTaskId(session.taskId ?? result?.taskId ?? "")}
+          {" "}
           <span className="muted" style={{ fontWeight: "normal", fontSize: "14px", marginLeft: "8px" }}>
             ({(session.taskId ?? result?.taskId ?? "").split("/")[0]})
           </span>
@@ -987,6 +988,7 @@ function SessionsView({ manifest }: { readonly manifest: Manifest }) {
               <div className="session-card-top">
                 <strong>
                   {formatTaskId(session.taskId)}
+                  {" "}
                   <span className="muted" style={{ fontWeight: "normal", fontSize: "11px", marginLeft: "6px" }}>
                     ({session.taskId.split("/")[0]})
                   </span>
@@ -1084,7 +1086,7 @@ function AppContent() {
         <section className="hero">
           <div className="hero-copy">
             <h2>Agentes de IA contra tareas del DCC.</h2>
-            <p>Minimax M3, Deepseek V4 Flash y GPT 5.4 Mini contra tareas de código de la carrera de Ingenieria Civil en Computación</p>
+            <p>MiniMax M3, DeepSeek V4 Flash y GPT 5.4 Mini contra tareas de código de la carrera de Ingeniería Civil en Computación.</p>
           </div>
           <div className="stats">
             <div className="stat"><strong>{manifest.targets.length}</strong><span>tareas</span></div>
@@ -1098,7 +1100,7 @@ function AppContent() {
       {view === "resultados" ? <ResultsView manifest={manifest} /> : <SessionsView manifest={manifest} />}
 
       {view === "resultados" ? <footer className="footer">
-        <p>Datos generados desde runs locales. Las runs pesan cerca de 20gb por lo que es díficil publicarlas.</p>
+        <p>Datos generados desde runs locales. Las runs pesan cerca de 20 GB, por lo que es difícil publicarlas.</p>
         <p>{manifest.project.disclaimer}</p>
         <a className="footer-github" href={manifest.project.githubUrl} target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
