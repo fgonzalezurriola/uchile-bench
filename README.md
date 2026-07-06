@@ -8,13 +8,13 @@ La regla central es simple: el solver ve `public/` y nada más. `original/`, `gr
 
 ## Resultados Actuales
 
-Snapshot local generado desde `runs/` el 2026-07-05. Las notas son del AI Judge `gpt-5.5-medium`; el costo de DeepSeek V4 Flash se calcula a partir del precio público pues por opencode es gratis.
+Snapshot local generado desde `runs/` el 2026-07-06. Las notas son del AI Judge `gpt-5.5-medium`; el costo de DeepSeek V4 Flash se calcula a partir del precio público pues por opencode es gratis.
 
-| Solver | Runs completas | Reviews GPT-5.5 medium | Nota media | Mediana | >= 6.0 | 7.0 | Costo observado | Tokens |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| MiniMax M3 (high-reasoning) | 28/28 | 28/28 | 6.91 | 7.0 | 28/28 | 21/28 | $19.80 | 128,061,137 | 
-| DeepSeek V4 Flash (max-reasoning) | 28/28 | 28/28 | 6.61 | 6.8 | 25/28 | 11/28 | $0.42 | 48,339,553 | 
-| GPT 5.4 mini (medium-reasoning) | 28/28 | 28/28 | 6.28 | 7.0 | 24/28 | 15/28 | $3.55 | 13,747,426 | 
+| Solver | Runs completas | Reviews GPT-5.5 medium | Nota media | Mediana | >= 6.0 | 7.0 | Costo observado | Tokens | Nota |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| MiniMax M3 (high-reasoning) | 28/28 | 28/28 | 6.95 | 7.0 | 28/28 | 22/28 | $19.80 | 128,061,137 | corrida completa |
+| DeepSeek V4 Flash (max-reasoning) | 28/28 | 28/28 | 6.65 | 6.8 | 25/28 | 12/28 | $0.42 | 48,339,553 | corrida completa |
+| GPT 5.4 mini (medium-reasoning) | 28/28 | 28/28 | 6.28 | 7.0 | 24/28 | 15/28 | $3.55 | 13,747,426 | corrida completa |
 
 
 

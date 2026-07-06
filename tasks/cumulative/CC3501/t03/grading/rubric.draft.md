@@ -2,86 +2,67 @@
 
 ## Alcance
 
-Se evalúa únicamente la entrega de la Tarea 3 de CC3501: una demostración programada sobre una temática relacionada con la materia del curso, usando el entorno del curso, junto con el código fuente y un video de 30 segundos. El trabajo heredado de etapas anteriores solo es contexto de implementación y no materia evaluable por sí mismo.
+Se evalúa únicamente la entrega de código fuente de la Tarea 3 de CC3501: una demostración programada sobre una temática relacionada con la materia del curso y ejecutable en el entorno del curso. El trabajo heredado de etapas anteriores solo es contexto de implementación y no materia evaluable por sí mismo.
 
-La idea de la demostración debe haber sido consultada al profesor por correo de u-cursos para validar que es aceptable como Tarea 3.
+No se evalúan evidencia externa, correo de validación por u-cursos, video ni presentación en clase, porque esos artefactos no forman parte del material disponible para el solver ni para el juez.
 
 ## Criterios
 
-### P1 - Propuesta válida y uso del entorno del curso
+### P1 - Temática relacionada y uso del entorno del curso
 
-- Origen del puntaje: enunciado
-- Puntaje máximo: sin puntaje propio especificado; requisito de elegibilidad
-- Requisito evaluado: la demostración corresponde a una temática relacionada con la materia del curso, fue consultada al profesor mediante correo de u-cursos y utiliza el entorno del curso.
-- Evidencia esperada: correo de validación o consulta por u-cursos; código fuente ejecutable en el entorno del curso.
-- Puntaje completo: la idea fue validada o consultada según lo indicado, la temática es pertinente al curso y el programa usa el entorno del curso.
-- Puntaje parcial: no especificado por el enunciado.
-- Puntaje cero: no especificado por el enunciado.
+- Origen del puntaje: adaptado para benchmark desde el enunciado.
+- Puntaje máximo: 1.0
+- Requisito evaluado: la demostración corresponde a una temática relacionada con la materia del curso y utiliza el entorno del curso.
+- Evidencia esperada: código fuente ejecutable en el entorno del curso.
+- Puntaje completo: la temática está relacionada con la materia y el programa usa las bibliotecas o herramientas esperadas del curso.
+- Puntaje parcial: asignar crédito si la relación con la materia o el uso del entorno es débil pero verificable.
+- Puntaje cero: la temática no está relacionada con la materia, no usa el entorno del curso o no hay código ejecutable.
 
-### P2 - Implementación completa de la demostración propuesta
+### P2 - Implementación completa de la demostración
 
-- Origen del puntaje: enunciado
-- Puntaje máximo: nota directa 6.0
-- Requisito evaluado: el programa implementa por completo la demostración propuesta por el estudiante.
-- Evidencia esperada: código fuente entregado en una carpeta con nombre de RUT, siguiendo la estructura de entregas anteriores; ejecución observable de la demostración.
-- Puntaje completo: si implementa lo que propuso por completo, obtiene nota 6.0.
-- Puntaje parcial: no hay niveles intermedios especificados. Cualquier evaluación de implementación incompleta queda como decisión para revisión humana.
-- Puntaje cero: no corresponde; el enunciado establece nota 1.0 si no entrega o si la demostración no ejecuta.
+- Origen del puntaje: adaptado para benchmark desde el enunciado.
+- Puntaje máximo: 4.0
+- Requisito evaluado: la demostración está implementada de forma completa y funcional.
+- Evidencia esperada: código fuente; ejecución o instanciación de la demostración en el entorno del curso; comportamiento observable de la técnica, animación, extensión o temática elegida.
+- Puntaje completo: la demostración implementa una idea completa, sustantiva y observable.
+- Puntaje parcial: asignar crédito según completitud, coherencia visual o interactiva y ausencia de componentes esenciales faltantes.
+- Puntaje cero: la demostración no está implementada, es meramente un stub o no permite observar la idea.
 
-### P3 - Video de demostración de 30 segundos
+### P3 - Ejecución y verificabilidad
 
-- Origen del puntaje: enunciado
-- Puntaje máximo: sin puntaje propio especificado; requisito de entrega
-- Requisito evaluado: se entrega un video de 30 segundos que muestra el funcionamiento de la demostración.
-- Evidencia esperada: archivo de video entregado; el video muestra solamente la ventana del programa. No se exige audio.
-- Puntaje completo: el video dura aproximadamente 30 segundos y muestra el funcionamiento de la demostración.
-- Puntaje parcial: no especificado por el enunciado.
-- Puntaje cero: no especificado por el enunciado.
-
-### P4 - Presentación del video en la última clase
-
-- Origen del puntaje: enunciado
-- Puntaje máximo: nota directa 7.0
-- Requisito evaluado: el día de la última clase se muestra el video al curso y se explica en 30 segundos qué hace el programa.
-- Evidencia esperada: registro o constatación de la presentación en la última clase.
-- Puntaje completo: si además de implementar la propuesta completa, muestra el video al curso y explica en 30 segundos lo que hace el programa, obtiene nota 7.0.
-- Puntaje parcial: no especificado por el enunciado.
-- Puntaje cero: no especificado por el enunciado.
+- Origen del puntaje: adaptado para benchmark desde el enunciado.
+- Puntaje máximo: 1.0
+- Requisito evaluado: la demostración puede ejecutarse o instanciarse de manera verificable en el entorno del curso sin errores bloqueantes.
+- Evidencia esperada: ejecución del punto de entrada o prueba equivalente que valide inicialización y comportamiento principal.
+- Puntaje completo: el código se ejecuta o puede ser instanciado sin errores bloqueantes.
+- Puntaje parcial: compila o importa, pero no permite verificar el comportamiento principal por defectos menores o limitaciones del entorno.
+- Puntaje cero: el punto de entrada falla por errores de importación, sintaxis, inicialización o runtime que impiden observar la demostración.
 
 ## Descuentos, topes y reglas especiales - si corresponde
 
-- Nota directa 1.0: si no entrega o si la demostración no ejecuta.
-- Nota directa 6.0: si implementa por completo lo que propuso.
-- Nota directa 7.0: si el día de la última clase muestra el video al curso y explica en 30 segundos lo que hace el programa.
-- La entrega debe incluir código fuente y video de 30 segundos.
-- El código fuente debe seguir la estructura de entregas anteriores: carpeta con nombre de RUT.
-- No es necesario que el video tenga audio.
-- El video debe grabar solamente la ventana del programa; no es necesario mostrar el entorno de programación ni el escritorio.
-- Se excluyen penalizaciones administrativas de atraso o plataforma, porque no forman parte de la pauta solicitada.
+- Nota directa 1.0: si no hay entrega de código fuente o si la demostración no ejecuta.
+- Correo de validación, video, presentación en clase y estructura administrativa de la entrega quedan fuera de la evaluación del benchmark.
 
 ## Escala final
 
-- Puntaje máximo original total: nota 7.0
-- Ponderación entre secciones: no corresponde
+- Puntaje máximo original por sección o total: no especificado como suma de puntos para el benchmark.
+- Puntaje máximo total propuesto: 6.0 puntos.
+- Ponderación entre secciones: no corresponde.
 - Nota mínima del benchmark: 1.0
 - Nota máxima del benchmark: 7.0
-- Redondeo: un decimal
-- Conversión base: lineal desde la proporción ponderada de logro, antes de aplicar descuentos, topes o notas directas explícitas. En esta tarea, el enunciado define notas directas explícitas de 1.0, 6.0 y 7.0.
+- Redondeo: un decimal.
+- Conversión base: lineal desde la proporción ponderada de logro, antes de aplicar descuentos, topes o notas directas explícitas. En esta tarea, la regla directa conservada es nota 1.0 si no hay entrega o la demostración no ejecuta.
 
 ## Supuestos y decisiones para revisión humana
 
 - Información extraída de los materiales:
-  - La entrega consiste en código fuente y un video de 30 segundos.
+  - En el benchmark se evalúa únicamente código fuente ejecutable.
   - La demostración debe usar el entorno del curso.
-  - La idea debe consultarse al profesor por correo de u-cursos.
-  - Implementar completamente lo propuesto da nota 6.0.
-  - Mostrar el video al curso en la última clase y explicar en 30 segundos da nota 7.0.
-  - No entregar o que la demostración no ejecute da nota 1.0.
+  - Si no entregan código fuente o la demostración no ejecuta, la nota es 1.0.
+  - Evidencia externa como correo, video o presentación no está disponible para evaluación reproducible.
 - Puntajes o niveles propuestos:
-  - No se propusieron puntajes nuevos para subcriterios, porque el enunciado usa notas directas.
+  - Se propone distribuir 6.0 puntos entre pertinencia/entorno, implementación y ejecución verificable.
+  - Una solución completa y ejecutable puede obtener nota máxima del benchmark sin evidencia externa.
 - Ambigüedades no resueltas:
-  - El enunciado no especifica cómo calificar implementaciones parciales.
-  - El enunciado no especifica el efecto exacto de entregar código sin video, video sin código, video de duración distinta o falta de evidencia de validación de la idea.
-- Requisitos no verificables con el material disponible:
-  - La validación efectiva de la idea por correo de u-cursos requiere acceso a esa evidencia.
-  - La presentación en la última clase requiere registro externo de asistencia o exposición.
+  - El enunciado original no define puntajes parciales para una implementación incompleta que sí ejecuta.
+  - El juez puede necesitar una prueba headless o por importación si el entorno no permite observar una ventana interactiva completa.

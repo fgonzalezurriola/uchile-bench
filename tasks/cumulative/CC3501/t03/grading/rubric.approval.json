@@ -1,8 +1,8 @@
 {
   "version": 2,
   "taskId": "CC3501/t03",
-  "rubricHash": "1b68ae6397754c1e983e80a253583a6eaa612aea7f1db575f9a7b15817f46d32",
-  "draftHash": "1b68ae6397754c1e983e80a253583a6eaa612aea7f1db575f9a7b15817f46d32",
-  "approvedAt": "2026-06-29T18:14:54.668Z",
-  "sourceDraftPath": "/home/fgonz/dev/benchmark-uchile/ai-task-bench/tasks/cumulative/CC3501/t03/grading/rubric.draft.md"
+  "rubricHash": "7304d5ce8c8f133956d52958c21c59331c3bed8adb6456e063f64c4401856674",
+  "draftHash": "7304d5ce8c8f133956d52958c21c59331c3bed8adb6456e063f64c4401856674",
+  "approvedAt": "2026-07-06T18:59:07.493Z",
+  "sourceDraftPath": "/home/fgonz/dev/uchile-bench/tasks/cumulative/CC3501/t03/grading/rubric.draft.md"
 }

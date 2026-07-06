@@ -5,6 +5,6 @@
   "agentId": "pi-openai-gpt-5.5-high-subscription",
   "model": "gpt-5.5",
   "image": "ai-task-bench-cc3501:debian12-uv-2024",
-  "draftHash": "1b68ae6397754c1e983e80a253583a6eaa612aea7f1db575f9a7b15817f46d32",
+  "draftHash": "7304d5ce8c8f133956d52958c21c59331c3bed8adb6456e063f64c4401856674",
   "sourceRunPath": "/home/fgonz/dev/benchmark-uchile/ai-task-bench/runs/rubrics/CC3501/t03/2026-06-29T14-24-45-497Z_pi-openai-gpt-5.5-high-subscription"
 }
