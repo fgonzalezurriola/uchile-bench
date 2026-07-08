@@ -550,9 +550,8 @@ const estimateDeepSeekUsageCost = (usage: UsageRecord): number => {
   const cacheReadTokens = typeof usage.cacheReadTokens === "number" && Number.isFinite(usage.cacheReadTokens)
     ? usage.cacheReadTokens
     : 0;
-  const cacheMissInputTokens = Math.max(0, inputTokens - cacheReadTokens);
   return (
-    (cacheMissInputTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheMiss) +
+    (inputTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheMiss) +
     (cacheReadTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheHit) +
     (outputTokens * DEEPSEEK_API_PRICING_PER_MILLION.output)
   ) / 1_000_000;
@@ -596,9 +595,8 @@ const estimateApiCost = (run: RunRecord): number => {
   }
 
   const cacheReadTokens = run.metrics.cacheReadTokens;
-  const cacheMissInputTokens = Math.max(0, run.metrics.inputTokens - cacheReadTokens);
   return (
-    (cacheMissInputTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheMiss) +
+    (run.metrics.inputTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheMiss) +
     (cacheReadTokens * DEEPSEEK_API_PRICING_PER_MILLION.inputCacheHit) +
     (run.metrics.outputTokens * DEEPSEEK_API_PRICING_PER_MILLION.output)
   ) / 1_000_000;

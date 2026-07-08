@@ -88,7 +88,7 @@
         "totalTokens": 2145,
         "cacheReadTokens": 1920,
         "cacheWriteTokens": 0,
-        "costUsd": 0.000034776
+        "costUsd": 0.00005157600000000001
       },
       "timestamp": 1783200753373
     },
@@ -193,7 +193,7 @@
         "totalTokens": 4299,
         "cacheReadTokens": 2048,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0000810544
+        "costUsd": 0.0003585344
       },
       "timestamp": 1783200755047
     },
@@ -292,7 +292,7 @@
         "totalTokens": 13862,
         "cacheReadTokens": 4224,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0008556072
+        "costUsd": 0.0014469672000000002
       },
       "timestamp": 1783200757487
     },
@@ -387,7 +387,7 @@
         "totalTokens": 14788,
         "cacheReadTokens": 13824,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0001381072
+        "costUsd": 0.00022336720000000002
       },
       "timestamp": 1783200763662
     },
@@ -464,7 +464,7 @@
         "totalTokens": 15172,
         "cacheReadTokens": 14720,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00010561600000000001
+        "costUsd": 0.00013669600000000003
       },
       "timestamp": 1783200766980
     },
@@ -501,7 +501,7 @@
         "totalTokens": 15362,
         "cacheReadTokens": 15104,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00008793120000000001
+        "costUsd": 0.00010123120000000001
       },
       "timestamp": 1783200769495
     },
@@ -548,7 +548,7 @@
         "totalTokens": 15902,
         "cacheReadTokens": 15360,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00009312800000000002
+        "costUsd": 0.000143948
       },
       "timestamp": 1783200771768
     },
@@ -593,7 +593,7 @@
         "totalTokens": 16455,
         "cacheReadTokens": 15872,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0000962416
+        "costUsd": 0.0001519616
       },
       "timestamp": 1783200774672
     },
@@ -634,7 +634,7 @@
         "totalTokens": 23074,
         "cacheReadTokens": 16384,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0011790352
+        "costUsd": 0.0015490552000000002
       },
       "timestamp": 1783200777469
     },
@@ -676,7 +676,7 @@
         "totalTokens": 24294,
         "cacheReadTokens": 23040,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00037279200000000005
+        "costUsd": 0.00039421200000000007
       },
       "timestamp": 1783200807957
     },
@@ -717,7 +717,7 @@
         "totalTokens": 24392,
         "cacheReadTokens": 24192,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00008761760000000001
+        "costUsd": 0.00010567760000000001
       },
       "timestamp": 1783200815482
     },
@@ -794,7 +794,7 @@
         "totalTokens": 24750,
         "cacheReadTokens": 24320,
         "cacheWriteTokens": 0,
-        "costUsd": 0.000153776
+        "costUsd": 0.00017113600000000004
       },
       "timestamp": 1783200817456
     },
@@ -867,7 +867,7 @@
         "totalTokens": 24974,
         "cacheReadTokens": 24704,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0000921312
+        "costUsd": 0.0001184512
       },
       "timestamp": 1783200820535
     },
@@ -918,7 +918,7 @@
         "totalTokens": 26039,
         "cacheReadTokens": 24960,
         "cacheWriteTokens": 0,
-        "costUsd": 0.000108808
+        "costUsd": 0.000240408
       },
       "timestamp": 1783200825451
     },
@@ -963,7 +963,7 @@
         "totalTokens": 29007,
         "cacheReadTokens": 25984,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0006635552
+        "costUsd": 0.0007913752
       },
       "timestamp": 1783200827940
     },
@@ -1020,7 +1020,7 @@
         "totalTokens": 31020,
         "cacheReadTokens": 28928,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0006267184
+        "costUsd": 0.0006467384
       },
       "timestamp": 1783200845947
     },
@@ -1073,7 +1073,7 @@
         "totalTokens": 31189,
         "cacheReadTokens": 30976,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0001122128
+        "costUsd": 0.0001292928
       },
       "timestamp": 1783200862479
     },
@@ -1110,7 +1110,7 @@
         "totalTokens": 32827,
         "cacheReadTokens": 31104,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00037185120000000004
+        "costUsd": 0.00047069120000000004
       },
       "timestamp": 1783200864729
     },
@@ -1147,7 +1147,7 @@
         "totalTokens": 33039,
         "cacheReadTokens": 32768,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00012171040000000001
+        "costUsd": 0.0001446704
       },
       "timestamp": 1783200874885
     },
@@ -1184,7 +1184,7 @@
         "totalTokens": 33487,
         "cacheReadTokens": 33024,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00019662720000000001
+        "costUsd": 0.00020936720000000003
       },
       "timestamp": 1783200877185
     },
@@ -1221,7 +1221,7 @@
         "totalTokens": 34051,
         "cacheReadTokens": 33408,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00012126239999999999
+        "costUsd": 0.00019742240000000002
       },
       "timestamp": 1783200881919
     },
@@ -1258,7 +1258,7 @@
         "totalTokens": 34990,
         "cacheReadTokens": 34048,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00012165440000000001
+        "costUsd": 0.00024037440000000001
       },
       "timestamp": 1783200884595
     },
@@ -1299,7 +1299,7 @@
         "totalTokens": 35956,
         "cacheReadTokens": 34944,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0001264032
+        "costUsd": 0.0002538032
       },
       "timestamp": 1783200887588
     },
@@ -1340,7 +1340,7 @@
         "totalTokens": 37067,
         "cacheReadTokens": 35840,
         "cacheWriteTokens": 0,
-        "costUsd": 0.00012891200000000002
+        "costUsd": 0.00028641200000000005
       },
       "timestamp": 1783200894056
     },
@@ -1381,7 +1381,7 @@
         "totalTokens": 39931,
         "cacheReadTokens": 36992,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0001410976
+        "costUsd": 0.0005337976000000001
       },
       "timestamp": 1783200900790
     },
@@ -1418,7 +1418,7 @@
         "totalTokens": 40086,
         "cacheReadTokens": 39808,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0001305024
+        "costUsd": 0.0001599024
       },
       "timestamp": 1783200906859
     },
@@ -1459,7 +1459,7 @@
         "totalTokens": 42926,
         "cacheReadTokens": 40064,
         "cacheWriteTokens": 0,
-        "costUsd": 0.0001362592
+        "costUsd": 0.0005248992000000001
       },
       "timestamp": 1783200913790
     },
@@ -1490,7 +1490,7 @@
         "totalTokens": 43638,
         "cacheReadTokens": 42880,
         "cacheWriteTokens": 0,
-        "costUsd": 0.000289464
+        "costUsd": 0.00031088400000000004
       },
       "timestamp": 1783200916339
     }
@@ -1521,7 +1521,7 @@
       "outputTokens": 14854,
       "totalTokens": 746643,
       "cacheReadTokens": 701440,
-      "costUsd": 0.006123152000000001
+      "costUsd": 0.010372012000000002
     },
     "durationSeconds": 184.483
   }

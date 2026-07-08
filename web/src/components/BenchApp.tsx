@@ -143,6 +143,20 @@ type Manifest = {
 type MainView = "resultados" | "sesiones";
 type MetricTab = "notas" | "costo" | "tokens";
 
+type SolverUsageBreakdown = {
+  readonly inputTokens: number;
+  readonly cacheReadTokens: number;
+  readonly outputTokens: number;
+  readonly totalTokens: number;
+  readonly cachePercent: number;
+};
+
+type ApiPricing = {
+  readonly inputUsdPerMillion: number;
+  readonly cacheReadUsdPerMillion: number;
+  readonly outputUsdPerMillion: number;
+};
+
 type ContentItem =
   | { readonly type: "text"; readonly text: string }
   | { readonly type: "thinking"; readonly text: string }
@@ -217,6 +231,12 @@ const fmtNumber = (value: number | null | undefined, digits: number): string =>
 const fmtUsd = (value: number | null | undefined): string =>
   value === null || value === undefined ? "-" : `$${value.toFixed(3)}`;
 
+const fmtUsdPerMillion = (value: number): string =>
+  `$${value.toLocaleString("en-US", {
+    minimumFractionDigits: value < 0.01 ? 4 : 2,
+    maximumFractionDigits: 4,
+  })}`;
+
 const fmtCompact = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return "-";
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
@@ -235,6 +255,51 @@ const getResult = (
   solverId: string,
 ): Result | undefined =>
   manifest.results.find((result) => result.taskId === taskId && result.solverId === solverId);
+
+const API_PRICING_BY_SOLVER_ID: Record<string, ApiPricing> = {
+  "pi-minimax-m3-high-api": {
+    inputUsdPerMillion: 0.6,
+    cacheReadUsdPerMillion: 0.12,
+    outputUsdPerMillion: 2.4,
+  },
+  "pi-zen-deepseek-v4-flash-free-xhigh": {
+    inputUsdPerMillion: 0.14,
+    cacheReadUsdPerMillion: 0.0028,
+    outputUsdPerMillion: 0.28,
+  },
+  "pi-openai-gpt-5.4-mini-medium-subscription": {
+    inputUsdPerMillion: 0.75,
+    cacheReadUsdPerMillion: 0.075,
+    outputUsdPerMillion: 4.5,
+  },
+};
+
+const getSolverUsageBreakdown = (
+  manifest: Manifest,
+  solverId: string,
+): SolverUsageBreakdown => {
+  const totals = manifest.results
+    .filter((result) => result.solverId === solverId && result.runId !== null)
+    .reduce(
+      (sum, result) => ({
+        inputTokens: sum.inputTokens + (result.inputTokens ?? 0),
+        cacheReadTokens: sum.cacheReadTokens + (result.cacheReadTokens ?? 0),
+        outputTokens: sum.outputTokens + (result.outputTokens ?? 0),
+        totalTokens: sum.totalTokens + (result.totalTokens ?? 0),
+      }),
+      {
+        inputTokens: 0,
+        cacheReadTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+      },
+    );
+
+  return {
+    ...totals,
+    cachePercent: totals.totalTokens === 0 ? 0 : (totals.cacheReadTokens / totals.totalTokens) * 100,
+  };
+};
 
 const gradeColor = (grade: number | null | undefined): string => {
   if (grade === null || grade === undefined) return "#171717";
@@ -562,6 +627,51 @@ function CostView({ manifest }: { readonly manifest: Manifest }) {
   );
 }
 
+function ApiPricingBreakdown({ manifest }: { readonly manifest: Manifest }) {
+  return (
+    <div className="api-pricing-panel">
+      <div className="api-pricing-title">
+        <h4>Tarifas API y uso</h4>
+        <span>USD por 1M tokens</span>
+      </div>
+      <table className="api-pricing-table">
+        <thead>
+          <tr>
+            <th>Modelo</th>
+            <th className="numeric">Input</th>
+            <th className="numeric">Cache</th>
+            <th className="numeric">Output</th>
+            <th className="numeric">Tokens input</th>
+            <th className="numeric">Tokens cache</th>
+            <th className="numeric">Tokens output</th>
+            <th className="numeric">Cache %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {manifest.summaries.map((summary) => {
+            const usage = getSolverUsageBreakdown(manifest, summary.solverId);
+            const pricing = API_PRICING_BY_SOLVER_ID[summary.solverId];
+            return (
+              <tr key={summary.solverId}>
+                <td>
+                  <ModelName label={summary.shortLabel} reasoning={summary.reasoning} color={summary.color} logo={summary.logo} loading="lazy" />
+                </td>
+                <td className="numeric">{pricing === undefined ? "-" : fmtUsdPerMillion(pricing.inputUsdPerMillion)}</td>
+                <td className="numeric">{pricing === undefined ? "-" : fmtUsdPerMillion(pricing.cacheReadUsdPerMillion)}</td>
+                <td className="numeric">{pricing === undefined ? "-" : fmtUsdPerMillion(pricing.outputUsdPerMillion)}</td>
+                <td className="numeric">{fmtCompact(usage.inputTokens)}</td>
+                <td className="numeric">{fmtCompact(usage.cacheReadTokens)}</td>
+                <td className="numeric">{fmtCompact(usage.outputTokens)}</td>
+                <td className="numeric">{usage.cachePercent.toFixed(1)}%</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function TokensView({ manifest }: { readonly manifest: Manifest }) {
   const maxTokens = Math.max(1, ...manifest.summaries.map((summary) => summary.totalTokens));
   const maxTools = Math.max(1, ...manifest.summaries.map((summary) => summary.toolCalls));
@@ -634,38 +744,47 @@ function ResultsView({ manifest }: { readonly manifest: Manifest }) {
           <GradeHeatmap manifest={manifest} />
         </>
       ) : metricTab === "costo" ? (
-        <CostView manifest={manifest} />
+        <>
+          <CostView manifest={manifest} />
+          <ApiPricingBreakdown manifest={manifest} />
+          <div className="api-pricing-panel">
+            <div className="api-pricing-title">
+              <h4>Resumen por modelo</h4>
+              <span>reviews, nota y costo</span>
+            </div>
+            <table className="leaderboard-table costo-table">
+              <thead>
+                <tr>
+                  <th>Modelo</th>
+                  <th className="numeric">Reviews</th>
+                  <th className="numeric">Nota promedio</th>
+                  <th className="numeric">≥ 6.0</th>
+                  <th className="numeric">7.0</th>
+                  <th className="numeric">Costo</th>
+                  <th className="numeric">Tokens</th>
+                </tr>
+              </thead>
+              <tbody>
+                {manifest.summaries.map((summary) => (
+                  <tr key={summary.solverId}>
+                    <td>
+                      <ModelName label={summary.label} reasoning={summary.reasoning} color={summary.color} logo={summary.logo} loading="lazy" />
+                    </td>
+                    <td className="numeric">{summary.judgedRuns}/{manifest.targets.length}</td>
+                    <td className="numeric">{fmtNumber(summary.meanGrade, 2)}</td>
+                    <td className="numeric">{summary.atLeastSix}/{summary.judgedRuns}</td>
+                    <td className="numeric">{summary.perfectGrades}/{summary.judgedRuns}</td>
+                    <td className="numeric">{fmtUsd(summary.observedCostUsd)}</td>
+                    <td className="numeric">{fmtCompact(summary.totalTokens)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : (
         <TokensView manifest={manifest} />
       )}
-      <table className="leaderboard-table">
-        <thead>
-          <tr>
-            <th>Modelo</th>
-            <th className="numeric">Reviews</th>
-            <th className="numeric">Nota promedio</th>
-            <th className="numeric">≥ 6.0</th>
-            <th className="numeric">7.0</th>
-            <th className="numeric">Costo</th>
-            <th className="numeric">Tokens</th>
-          </tr>
-        </thead>
-        <tbody>
-          {manifest.summaries.map((summary) => (
-            <tr key={summary.solverId}>
-              <td>
-                <ModelName label={summary.label} reasoning={summary.reasoning} color={summary.color} logo={summary.logo} loading="lazy" />
-              </td>
-              <td className="numeric">{summary.judgedRuns}/{manifest.targets.length}</td>
-              <td className="numeric">{fmtNumber(summary.meanGrade, 2)}</td>
-              <td className="numeric">{summary.atLeastSix}/{summary.judgedRuns}</td>
-              <td className="numeric">{summary.perfectGrades}/{summary.judgedRuns}</td>
-              <td className="numeric">{fmtUsd(summary.observedCostUsd)}</td>
-              <td className="numeric">{fmtCompact(summary.totalTokens)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </section>
   );
 }

@@ -424,6 +424,51 @@ th.numeric {
   font-size: 12px;
 }
 
+.api-pricing-panel {
+  padding: 0 18px 18px;
+}
+
+.api-pricing-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0 10px;
+}
+
+.api-pricing-title h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.api-pricing-title span {
+  color: #8e8e8e;
+  font-size: 12px;
+}
+
+.api-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #242424;
+}
+
+.costo-table {
+  border: 1px solid #242424;
+  border-radius: 0;
+  margin-top: 4px;
+}
+
+.costo-table th,
+.costo-table td {
+  border-bottom: 1px solid #242424;
+}
+
+.costo-table tbody tr:last-child th,
+.costo-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -1048,14 +1093,17 @@ th.numeric {
     min-width: 620px;
   }
 
-  .leaderboard-table {
+  .leaderboard-table,
+  .api-pricing-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
   .leaderboard-table th,
-  .leaderboard-table td {
+  .leaderboard-table td,
+  .api-pricing-table th,
+  .api-pricing-table td {
     white-space: nowrap;
   }
 }
